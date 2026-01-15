@@ -12,10 +12,10 @@ if BASE_DIR not in sys.path:
 # --------------------------------------------------
 # Imports
 # --------------------------------------------------
-from classification.query_classifier import QueryClassifier
-from llm_selector.llm_model_selection import select_llm_and_generate
-from safety.hallucination_guard import hallucination_guard
-from safety.source_validation import validate_sources
+from Backend.classification.query_classifier import QueryClassifier
+from Backend.llm_selector.llm_model_selection import select_llm_and_generate
+from Backend.safety.hallucination_guard import hallucination_guard
+from Backend.safety.source_validation import validate_sources
 
 # --------------------------------------------------
 # Initialize reusable components
