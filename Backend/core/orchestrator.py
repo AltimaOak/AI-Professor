@@ -3,8 +3,8 @@
 import google.generativeai as genai
 from groq import Groq
 
-from classification.difficulty_estimator import DifficultyEstimator
-from classification.query_classifier import QueryClassifier
+from Backend.classification.difficulty_estimator import DifficultyEstimator
+from Backend.classification.query_classifier import QueryClassifier
 
 from llm_selector.llm_model_selector import LLMModelSelector
 from teaching.lesson_planner import LessonPlanner
