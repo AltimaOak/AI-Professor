@@ -8,14 +8,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Imports
 try:
-    from knowledge.syllabus_retriever import retrieve_syllabus_context
+    from Backend.knowledge.syllabus_retriever import retrieve_syllabus_context
 except ModuleNotFoundError:
     # Temporary fallback (for testing)
     def retrieve_syllabus_context(query: str):
         return None
 
 try:
-    from llm_selector.llm_model_selection import select_llm_and_generate
+    from Backend.llm_selector.llm_model_selection import select_llm_and_generate
 except ModuleNotFoundError:
     # Temporary fallback (for testing)
     def select_llm_and_generate(**kwargs):
