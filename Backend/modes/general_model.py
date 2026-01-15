@@ -1,56 +1,91 @@
 import sys
 import os
+from typing import Dict, Any
 
-# Add Backend folder to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# --------------------------------------------------
+# Ensure Backend is in Python path
+# --------------------------------------------------
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if BASE_DIR not in sys.path:
+    sys.path.append(BASE_DIR)
 
-# Imports (ensure folder names are correct)
-try:
-    from classification.query_classifier import query_classifier
-except ModuleNotFoundError:
-    # Temporary mock for testing
-    def query_classifier(user_query):
-        return {
-            "intent": "concept_explanation",
-            "complexity": "medium",
-            "domain": "computer_science"
-        }
+# --------------------------------------------------
+# Imports
+# --------------------------------------------------
+from classification.query_classifier import QueryClassifier
+from llm_selector.llm_model_selection import select_llm_and_generate
+from safety.hallucination_guard import hallucination_guard
+from safety.source_validation import validate_sources
 
-try:
-    from llm_selector.llm_model_selection import select_llm_and_generate
-except ModuleNotFoundError:
-    # Temporary mock for testing
-    def select_llm_and_generate(query, classification):
-        return "This is a generated answer."
+# --------------------------------------------------
+# Initialize reusable components
+# --------------------------------------------------
+query_classifier = QueryClassifier()
 
 
-def run_general_mode(user_query: str) -> dict:
+# --------------------------------------------------
+# General Mode Orchestrator
+# --------------------------------------------------
+def run_general_mode(user_query: str, context: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    """
+    Executes GENERAL STUDY MODE.
+
+    Flow:
+    1. Validate input
+    2. Classify query
+    3. Select LLM (Groq / Gemini)
+    4. Generate response
+    5. Run safety checks
+    6. Return structured response
+    """
+
+    # 1️⃣ Input validation
     if not user_query or not user_query.strip():
         return {
             "status": "error",
+            "mode": "general",
             "message": "Empty query received"
         }
 
-    # 1️⃣ Classify user query
-    classification_result = query_classifier(user_query)
+    # 2️⃣ Query classification
+    classification_result = query_classifier.classify(
+        query=user_query,
+        context=context
+    )
 
-    # 2️⃣ Select LLM & generate response
+    # 3️⃣ LLM selection & generation
     llm_response = select_llm_and_generate(
         query=user_query,
         classification=classification_result
     )
 
-    # 3️⃣ Final unified response
+    # 4️⃣ Safety checks
+    hallucination_flag = hallucination_guard(
+        answer=llm_response,
+        classification=classification_result
+    )
+
+    source_validation_flag = validate_sources(
+        answer=llm_response
+    )
+
+    # 5️⃣ Final unified response
     return {
         "status": "success",
         "mode": "general",
         "classification": classification_result,
-        "answer": llm_response
+        "answer": llm_response,
+        "safety": {
+            "hallucination_risk": hallucination_flag,
+            "source_validity": source_validation_flag
+        }
     }
 
 
-# Test run
+# --------------------------------------------------
+# Local test run
+# --------------------------------------------------
 if __name__ == "__main__":
-    test_query = "Explain polymorphism in OOP."
+    test_query = "Explain polymorphism in OOP with an example"
     result = run_general_mode(test_query)
     print(result)
