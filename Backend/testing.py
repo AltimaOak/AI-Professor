@@ -9,6 +9,6 @@ while True:
     if user_query.lower() == "exit":
         break
     result = qc.classify(query=user_query)
-    print("Classification result:", result)'''
-
+    print("Classification result:", result)
+'''
 
