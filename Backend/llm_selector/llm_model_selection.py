@@ -1,4 +1,5 @@
 # llm_selector/llm_model_selection.py
+import requests
 from Backend.config import Config
 
 class LLMModelSelector:
@@ -8,7 +9,7 @@ class LLMModelSelector:
     """
 
     def __init__(self):
-        # Gemini model presets
+        # Gemini model presets (static)
         self.gemini_models = {
             "fast": {
                 "name": "gemini-1.5-flash",
@@ -27,24 +28,48 @@ class LLMModelSelector:
             }
         }
 
-        # Groq model presets
+        # Groq model presets (default names, will be updated dynamically if possible)
         self.groq_models = {
             "fast": {
-                "name": "llama-3-8b-instruct",
+                "name": "llama-3.1-8b-instruct",  # updated default
                 "temperature": 0.5,
                 "max_tokens": 2048
             },
             "balanced": {
-                "name": "llama-3-70b-instruct",
+                "name": "llama-3.1-70b-instruct",  # updated default
                 "temperature": 0.7,
                 "max_tokens": 4096
             },
             "accurate": {
-                "name": "llama-3-70b-instruct",
+                "name": "llama-3.1-70b-instruct",  # updated default
                 "temperature": 0.3,
                 "max_tokens": 8192
             }
         }
+
+        # Try to refresh Groq models dynamically
+        self._refresh_groq_models()
+
+    def _refresh_groq_models(self):
+        """
+        Fetch available Groq models dynamically and update presets if possible.
+        """
+        try:
+            headers = {"Authorization": f"Bearer {Config.GROQ_API_KEY}"}
+            resp = requests.get(f"{Config.GROQ_API_ENDPOINT}/openai/v1/models", headers=headers)
+            if resp.status_code == 200:
+                models = [m["id"] for m in resp.json().get("data", [])]
+
+                # Update presets if matching models are found
+                for m in models:
+                    if "70b" in m:
+                        self.groq_models["balanced"]["name"] = m
+                        self.groq_models["accurate"]["name"] = m
+                    elif "8b" in m:
+                        self.groq_models["fast"]["name"] = m
+        except Exception:
+            # Fail silently — keep defaults
+            pass
 
     def select_model(
         self,
@@ -70,7 +95,7 @@ class LLMModelSelector:
         elif provider == "groq":
             models = self.groq_models
             api_key = Config.GROQ_API_KEY
-            endpoint = Config.GROQ_API_ENDPOINT
+            endpoint = f"{Config.GROQ_API_ENDPOINT}/openai/v1/chat/completions"
         else:
             raise ValueError(f"Unsupported provider: {provider}")
 
