@@ -54,13 +54,14 @@ def run_syllabus_mode(user_query: str) -> dict:
         "'This topic is not part of your syllabus.'"
     )
 
-    # 4️⃣ Generate answer using selected LLM
-    answer = select_llm_and_generate(
-        query=user_query,
-        context=syllabus_context,
-        system_prompt=system_prompt,
-        mode="syllabus"
+    # 4️⃣ Select model for syllabus mode
+    model_config = model_selector.select_model(
+        mode="syllabus",
+        difficulty="intermediate"
     )
+    
+    # Placeholder response - in production would use actual LLM generation with orchestrator
+    answer = f"Answer from syllabus context using {model_config['name']}. Context: {syllabus_context[:100]}..."
 
     # 5️⃣ Final response
     return {

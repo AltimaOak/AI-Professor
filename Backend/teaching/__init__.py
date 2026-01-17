@@ -8,7 +8,13 @@ example_gen = ExampleGenerator()
 
 lesson = planner.plan_lesson("Operating System", "beginner")
 explanation = explainer.generate_explanation(lesson)
-example = example_gen.generate_example("Operating System", "beginner")
+example = example_gen.generate_examples(
+    "Operating System",
+    "beginner",
+    1
+)
+
+
 
 final_response = f"""
 {explanation}
