@@ -1,7 +1,10 @@
-# teaching/explanation_engine.py
-
 import os
 import requests
+
+from prompts.system_prompts import get_system_prompt
+from prompts.teaching_prompts import get_teaching_prompt
+from prompts.personality_prompts import get_personality_prompt
+
 
 class ExplanationEngine:
     def __init__(self):
@@ -12,7 +15,7 @@ class ExplanationEngine:
             raise ValueError("GROQ_API_KEY is not set in environment variables")
 
         self.api_url = "https://api.groq.com/openai/v1/chat/completions"
-        self.model = "llama-3.1-8b-instant" # you can change later
+        self.model = "llama-3.1-8b-instant"
 
     def generate_explanation(self, lesson_plan: dict) -> str:
         """
@@ -20,12 +23,13 @@ class ExplanationEngine:
         using Groq LLM
         """
 
-        # 🔹 Build teaching prompt
-        prompt = f"""
-You are an AI Professor.
+        # 🔹 Build layered prompts
+        system_prompt = get_system_prompt(mode="general")
+        teaching_prompt = get_teaching_prompt()
+        personality_prompt = get_personality_prompt()
 
-Teach the following topic in a clear and student-friendly way.
-
+        # 🔹 User-facing teaching content
+        user_prompt = f"""
 Topic: {lesson_plan['topic']}
 
 Introduction:
@@ -36,8 +40,6 @@ Core Explanation:
 
 Summary:
 {lesson_plan['summary']}
-
-Explain step-by-step and keep it simple.
 """
 
         headers = {
@@ -48,11 +50,13 @@ Explain step-by-step and keep it simple.
         payload = {
             "model": self.model,
             "messages": [
-                {"role": "system", "content": "You are a helpful teaching assistant."},
-                {"role": "user", "content": prompt}
+                {"role": "system", "content": system_prompt},
+                {"role": "system", "content": teaching_prompt},
+                {"role": "system", "content": personality_prompt},
+                {"role": "user", "content": user_prompt}
             ],
             "temperature": 0.5,
-            "max_tokens": 500
+            "max_tokens": 700
         }
 
         response = requests.post(
