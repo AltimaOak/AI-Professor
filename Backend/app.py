@@ -1,7 +1,15 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import google.generativeai as genai
+from google import genai
 import os
+
+# 🔥 FIX: Proper dotenv loading (IMPORTANT)
+from pathlib import Path
+from dotenv import load_dotenv
+
+env_path = Path(__file__).resolve().parent / ".env"
+load_dotenv(dotenv_path=env_path)
+
 import fitz  # PyMuPDF
 import chromadb
 from sentence_transformers import SentenceTransformer
@@ -13,8 +21,15 @@ app = Flask(__name__)
 CORS(app)
 
 # ---------------- GEMINI SETUP ----------------
-genai.configure(api_key=os.getenv("AIzaSyB6dy9tuNWAGu19vhna5vWYCv6Mx5AA2Wg"))
-gemini_model = genai.GenerativeModel("gemini-2.5-flash")
+API_KEY = os.getenv("GEMINI_API_KEY")
+
+# 🔥 DEBUG (keep for now)
+print("Loaded API KEY:", API_KEY)
+
+if not API_KEY:
+    raise ValueError("GEMINI_API_KEY not set in environment variables")
+
+client = genai.Client(api_key=API_KEY)
 
 # ---------------- GLOBAL DATA ----------------
 syllabus_data = ""
@@ -27,14 +42,11 @@ embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 chroma_client = chromadb.Client()
 collection = chroma_client.get_or_create_collection("uploaded_docs")
 
-# ---------------- OCR PATH (WINDOWS FIX) ----------------
-# Uncomment if needed
-# pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-
 # ---------------- HELPER FUNCTIONS ----------------
+
 def extract_pdf_text(path):
-    doc = fitz.open(path)
-    return " ".join(page.get_text() for page in doc)
+    with fitz.open(path) as doc:
+        return " ".join(page.get_text() for page in doc)
 
 def extract_text_file(path):
     with open(path, "r", encoding="utf-8") as f:
@@ -55,58 +67,94 @@ def chunk_text(text, size=400, overlap=50):
     return chunks
 
 def gemini_generate(prompt):
-    response = gemini_model.generate_content(prompt)
-    return response.text
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt
+        )
+        return response.text
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 # ---------------- ROUTES ----------------
+
 @app.route("/")
 def home():
-    return "AI Professor Backend (Gemini) Running"
+    return "AI Professor Backend (Gemini Latest) Running"
 
 # -------- GENERAL MODE --------
 @app.route("/general", methods=["POST"])
 def general_mode():
-    question = request.json.get("question", "")
+    data = request.get_json(silent=True) or {}
+    question = data.get("question", "")
+
+    if not question:
+        return jsonify({"error": "Question is required"}), 400
 
     prompt = f"""
-    You are an AI Professor.
-    Explain clearly with examples.
+You are an AI Professor.
 
-    QUESTION:
-    {question}
-    """
+Teach clearly in structured format:
+1. Concept overview
+2. Step-by-step explanation
+3. Example
+4. Summary
+
+QUESTION:
+{question}
+"""
 
     answer = gemini_generate(prompt)
-    return jsonify({"answer": answer})
+
+    return jsonify({
+        "mode": "general",
+        "question": question,
+        "answer": answer
+    })
 
 # -------- SYLLABUS MODE --------
 @app.route("/upload-syllabus", methods=["POST"])
 def upload_syllabus():
     global syllabus_data
-    syllabus_data = request.json.get("syllabus", "")
+    data = request.get_json(silent=True) or {}
+
+    syllabus_data = data.get("syllabus", "")
+    if not syllabus_data:
+        return jsonify({"error": "Syllabus content is required"}), 400
+
     return jsonify({"status": "Syllabus stored successfully"})
 
 @app.route("/syllabus", methods=["POST"])
 def syllabus_mode():
-    question = request.json.get("question", "")
+    data = request.get_json(silent=True) or {}
+    question = data.get("question", "")
+
+    if not syllabus_data:
+        return jsonify({"error": "No syllabus uploaded"}), 400
 
     prompt = f"""
-    You are an AI Professor.
-    Answer ONLY using the syllabus below.
-    If the question is outside the syllabus, reply:
-    "This topic is not part of your syllabus."
+You are an AI Professor.
 
-    SYLLABUS:
-    {syllabus_data}
+Answer ONLY from syllabus.
+If not present, say:
+"This topic is not part of your syllabus."
 
-    QUESTION:
-    {question}
-    """
+SYLLABUS:
+{syllabus_data}
+
+QUESTION:
+{question}
+"""
 
     answer = gemini_generate(prompt)
-    return jsonify({"answer": answer})
 
-# -------- FILE UPLOAD (PDF / TXT / IMAGE) --------
+    return jsonify({
+        "mode": "syllabus",
+        "question": question,
+        "answer": answer
+    })
+
+# -------- FILE UPLOAD --------
 @app.route("/upload-file", methods=["POST"])
 def upload_file():
     file = request.files.get("file")
@@ -117,57 +165,84 @@ def upload_file():
     filepath = os.path.join(UPLOAD_FOLDER, file.filename)
     file.save(filepath)
 
-    if file.filename.lower().endswith(".pdf"):
-        text = extract_pdf_text(filepath)
-    elif file.filename.lower().endswith(".txt"):
-        text = extract_text_file(filepath)
-    elif file.filename.lower().endswith((".png", ".jpg", ".jpeg")):
-        text = extract_image_text(filepath)
-    else:
-        return jsonify({"error": "Unsupported file type"}), 400
+    try:
+        if file.filename.lower().endswith(".pdf"):
+            text = extract_pdf_text(filepath)
+        elif file.filename.lower().endswith(".txt"):
+            text = extract_text_file(filepath)
+        elif file.filename.lower().endswith((".png", ".jpg", ".jpeg")):
+            text = extract_image_text(filepath)
+        else:
+            return jsonify({"error": "Unsupported file type"}), 400
 
-    text = clean_text(text)
-    chunks = chunk_text(text)
+        text = clean_text(text)
+        if not text:
+            return jsonify({"error": "No identifiable text found in file"}), 400
 
-    embeddings = embedding_model.encode(chunks).tolist()
+        chunks = chunk_text(text)
+        if not chunks:
+            return jsonify({"error": "Text too short to process"}), 400
 
-    collection.add(
-        documents=chunks,
-        embeddings=embeddings,
-        ids=[f"{file.filename}_{i}" for i in range(len(chunks))]
-    )
+        embeddings = embedding_model.encode(chunks).tolist()
 
-    return jsonify({
-        "status": "File processed successfully",
-        "chunks_created": len(chunks)
-    })
+        collection.upsert(
+            documents=chunks,
+            embeddings=embeddings,
+            ids=[f"{file.filename}_{i}" for i in range(len(chunks))]
+        )
 
-# -------- ASK FROM UPLOADED FILE --------
+        return jsonify({
+            "status": "File processed successfully",
+            "chunks_created": len(chunks)
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# -------- ASK FROM FILE --------
 @app.route("/ask-file", methods=["POST"])
 def ask_file():
-    question = request.json.get("question", "")
+    data = request.get_json(silent=True) or {}
+    question = data.get("question", "")
 
-    results = collection.query(
-        query_texts=[question],
-        n_results=4
-    )
+    if not question:
+        return jsonify({"error": "Question is required"}), 400
 
-    context = "\n".join(results["documents"][0])
+    try:
+        query_embedding = embedding_model.encode([question]).tolist()
+        results = collection.query(
+            query_embeddings=query_embedding,
+            n_results=4
+        )
 
-    prompt = f"""
-    Answer ONLY using the context below.
-    If the answer is not found, say:
-    "Answer not available in uploaded documents."
+        docs = results.get("documents", [])
+        if not docs or not docs[0]:
+            return jsonify({"error": "No relevant context found. Please upload a document first."}), 404
 
-    CONTEXT:
-    {context}
+        context = "\n".join(docs[0])
 
-    QUESTION:
-    {question}
-    """
+        prompt = f"""
+Answer ONLY using this context.
+If not found, say:
+"Answer not available in uploaded documents."
 
-    answer = gemini_generate(prompt)
-    return jsonify({"answer": answer})
+CONTEXT:
+{context}
+
+QUESTION:
+{question}
+"""
+
+        answer = gemini_generate(prompt)
+
+        return jsonify({
+            "mode": "file",
+            "question": question,
+            "answer": answer
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # ---------------- RUN SERVER ----------------
 if __name__ == "__main__":
