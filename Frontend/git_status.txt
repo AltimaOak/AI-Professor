@@ -1,0 +1,29 @@
+On branch tamy1
+Your branch is up to date with 'origin/tamy1'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   index.html
+	modified:   package-lock.json
+	modified:   src/App.jsx
+	modified:   src/Index.css
+	modified:   src/components/chatbox.tsx
+	modified:   src/components/drawingcanvas.tsx
+	modified:   src/components/fileupload.tsx
+	modified:   src/components/navbar.tsx
+	modified:   src/components/themetoggle.tsx
+	deleted:    src/index.js
+	modified:   ../index.html
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	../Backend/node_modules/
+	../Backend/package-lock.json
+	../Backend/package.json
+	git_status.txt
+	src/index.jsx
+	vite.config.ts
+	../build_output.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")

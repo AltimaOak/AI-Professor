@@ -7,8 +7,11 @@ const ThemeToggle = () => {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    const isDarkMode = document.documentElement.classList.contains("dark");
-    setIsDark(isDarkMode);
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const shouldBeDark = savedTheme === "dark" || (!savedTheme && prefersDark);
+    setIsDark(shouldBeDark);
+    document.documentElement.classList.toggle("dark", shouldBeDark);
   }, []);
 
   const toggleTheme = () => {
@@ -18,35 +21,12 @@ const ThemeToggle = () => {
     localStorage.setItem("theme", newIsDark ? "dark" : "light");
   };
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const shouldBeDark = savedTheme === "dark" || (!savedTheme && prefersDark);
-    setIsDark(shouldBeDark);
-    document.documentElement.classList.toggle("dark", shouldBeDark);
-  }, []);
-
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={toggleTheme}
-      className="relative overflow-hidden"
-    >
-      <motion.div
-        initial={false}
-        animate={{ rotate: isDark ? 180 : 0, scale: isDark ? 0 : 1 }}
-        transition={{ duration: 0.3 }}
-        className="absolute"
-      >
+    <Button variant="ghost" size="icon" onClick={toggleTheme} className="relative overflow-hidden">
+      <motion.div initial={false} animate={{ rotate: isDark ? 180 : 0, scale: isDark ? 0 : 1 }} transition={{ duration: 0.3 }} className="absolute">
         <Sun className="h-5 w-5" />
       </motion.div>
-      <motion.div
-        initial={false}
-        animate={{ rotate: isDark ? 0 : -180, scale: isDark ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
-        className="absolute"
-      >
+      <motion.div initial={false} animate={{ rotate: isDark ? 0 : -180, scale: isDark ? 1 : 0 }} transition={{ duration: 0.3 }} className="absolute">
         <Moon className="h-5 w-5" />
       </motion.div>
     </Button>

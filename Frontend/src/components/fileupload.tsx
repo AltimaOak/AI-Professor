@@ -3,17 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Upload, File, X, FileText, Image, FileSpreadsheet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface UploadedFile {
-  id: string;
-  name: string;
-  type: string;
-  size: number;
-}
-
-interface FileUploadProps {
-  onFilesChange: (files: UploadedFile[]) => void;
-  files: UploadedFile[];
-}
+interface UploadedFile { id: string; name: string; type: string; size: number; }
+interface FileUploadProps { onFilesChange: (files: UploadedFile[]) => void; files: UploadedFile[]; }
 
 const getFileIcon = (type: string) => {
   if (type.includes("pdf")) return FileText;
@@ -32,108 +23,39 @@ const FileUpload = ({ onFilesChange, files }: FileUploadProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const droppedFiles = Array.from(e.dataTransfer.files);
-    addFiles(droppedFiles);
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const selectedFiles = Array.from(e.target.files);
-      addFiles(selectedFiles);
-    }
-  };
-
   const addFiles = (newFiles: File[]) => {
-    const uploadedFiles: UploadedFile[] = newFiles.map((file) => ({
-      id: `${file.name}-${Date.now()}-${Math.random()}`,
-      name: file.name,
-      type: file.type,
-      size: file.size,
-    }));
-    onFilesChange([...files, ...uploadedFiles]);
-  };
-
-  const removeFile = (id: string) => {
-    onFilesChange(files.filter((f) => f.id !== id));
+    const uploaded: UploadedFile[] = newFiles.map((f) => ({ id: `${f.name}-${Date.now()}-${Math.random()}`, name: f.name, type: f.type, size: f.size }));
+    onFilesChange([...files, ...uploaded]);
   };
 
   return (
     <div className="space-y-3">
       <motion.div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
+        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+        onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
+        onDrop={(e) => { e.preventDefault(); setIsDragging(false); addFiles(Array.from(e.dataTransfer.files)); }}
         onClick={() => inputRef.current?.click()}
-        animate={{
-          scale: isDragging ? 1.02 : 1,
-          borderColor: isDragging ? "hsl(var(--primary))" : "hsl(var(--border))",
-        }}
-        className="relative cursor-pointer border-2 border-dashed rounded-xl p-6 text-center transition-colors hover:border-primary/50 hover:bg-primary/5"
+        animate={{ scale: isDragging ? 1.02 : 1 }}
+        className="relative cursor-pointer border-2 border-dashed rounded-xl p-6 text-center hover:border-primary/50 hover:bg-primary/5"
       >
-        <input
-          ref={inputRef}
-          type="file"
-          multiple
-          accept=".pdf,.png,.jpg,.jpeg,.txt,.doc,.docx"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
+        <input ref={inputRef} type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.txt,.doc,.docx" onChange={(e) => e.target.files && addFiles(Array.from(e.target.files))} className="hidden" />
         <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">
-          <span className="text-primary font-medium">Click to upload</span> or drag and drop
-        </p>
-        <p className="text-xs text-muted-foreground mt-1">
-          PDF, Images, Text files (max 10MB)
-        </p>
+        <p className="text-sm text-muted-foreground"><span className="text-primary font-medium">Click to upload</span> or drag and drop</p>
+        <p className="text-xs text-muted-foreground mt-1">PDF, Images, Text files (max 10MB)</p>
       </motion.div>
-
       <AnimatePresence>
         {files.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="space-y-2"
-          >
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="space-y-2">
             {files.map((file) => {
               const Icon = getFileIcon(file.type);
               return (
-                <motion.div
-                  key={file.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  className="flex items-center gap-3 p-3 bg-muted rounded-lg"
-                >
+                <motion.div key={file.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
                   <Icon className="w-5 h-5 text-primary shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{file.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatFileSize(file.size)}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{formatFileSize(file.size)}</p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="shrink-0 h-8 w-8"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeFile(file.id);
-                    }}
-                  >
+                  <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8" onClick={(e) => { e.stopPropagation(); onFilesChange(files.filter((f) => f.id !== file.id)); }}>
                     <X className="w-4 h-4" />
                   </Button>
                 </motion.div>

@@ -22,40 +22,24 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto">
         <div className="glass-effect rounded-2xl px-4 py-2 flex items-center justify-between">
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <motion.div
-              whileHover={{ rotate: [0, -10, 10, 0] }}
-              transition={{ duration: 0.5 }}
-            >
+            <motion.div whileHover={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 0.5 }}>
               <Skull className="w-8 h-8 text-primary" />
             </motion.div>
-            <span className="font-display font-bold text-lg gradient-text">
-              Professor Bones
-            </span>
+            <span className="font-display font-bold text-lg gradient-text">Professor Bones</span>
           </Link>
 
-          {/* Navigation Links */}
           <div className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               return (
                 <Link key={item.path} to={item.path}>
-                  <Button
-                    variant="ghost"
-                    className={`relative px-4 py-2 transition-all duration-200 ${
-                      isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
+                  <Button variant="ghost" className={`relative px-4 py-2 transition-all duration-200 ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
                     <Icon className="w-4 h-4 mr-2" />
                     {item.label}
                     {isActive && (
-                      <motion.div
-                        layoutId="navIndicator"
-                        className="absolute bottom-0 left-2 right-2 h-0.5 gradient-bg rounded-full"
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                      />
+                      <motion.div layoutId="navIndicator" className="absolute bottom-0 left-2 right-2 h-0.5 gradient-bg rounded-full" transition={{ type: "spring", stiffness: 500, damping: 30 }} />
                     )}
                   </Button>
                 </Link>
@@ -63,7 +47,6 @@ const Navbar = () => {
             })}
           </div>
 
-          {/* Right side */}
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <Link to="/login">
