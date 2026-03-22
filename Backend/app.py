@@ -2,18 +2,26 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import google.generativeai as genai
 import os
+from dotenv import load_dotenv
 import fitz  # PyMuPDF
 import chromadb
 from sentence_transformers import SentenceTransformer
 from PIL import Image
 import pytesseract
 
+# Load environment variables from .env file
+load_dotenv()
+
 # ---------------- APP SETUP ----------------
 app = Flask(__name__)
 CORS(app)
 
 # ---------------- GEMINI SETUP ----------------
-genai.configure(api_key=os.getenv("AIzaSyB6dy9tuNWAGu19vhna5vWYCv6Mx5AA2Wg"))
+# Use environment variable for secrets and avoid hardcoded keys in repo.
+gemini_api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_GEMINI_API_KEY")
+if not gemini_api_key:
+    raise RuntimeError("GEMINI_API_KEY is required in environment variables")
+genai.configure(api_key=gemini_api_key)
 gemini_model = genai.GenerativeModel("gemini-2.5-flash")
 
 # ---------------- GLOBAL DATA ----------------
@@ -64,8 +72,14 @@ def home():
     return "AI Professor Backend (Gemini) Running"
 
 # -------- GENERAL MODE --------
-@app.route("/general", methods=["POST"])
+@app.route("/general", methods=["GET", "POST"])
 def general_mode():
+    if request.method == "GET":
+        return jsonify({
+            "info": "POST JSON {question:'...'} to this endpoint for a response",
+            "example": {"question": "What is a neural network?"}
+        })
+
     question = request.json.get("question", "")
 
     prompt = f"""
@@ -80,13 +94,19 @@ def general_mode():
     return jsonify({"answer": answer})
 
 # -------- SYLLABUS MODE --------
-@app.route("/upload-syllabus", methods=["POST"])
+@app.route("/upload-syllabus", methods=["GET", "POST"])
 def upload_syllabus():
+    if request.method == "GET":
+        return jsonify({
+            "info": "POST JSON {syllabus:'...'} to save text for syllabus mode",
+            "example": {"syllabus": "Week1: Intro to AI..."}
+        })
+
     global syllabus_data
     syllabus_data = request.json.get("syllabus", "")
     return jsonify({"status": "Syllabus stored successfully"})
 
-@app.route("/syllabus", methods=["POST"])
+@app.route("/syllabus", methods=["GET", "POST"])
 def syllabus_mode():
     question = request.json.get("question", "")
 
@@ -107,8 +127,14 @@ def syllabus_mode():
     return jsonify({"answer": answer})
 
 # -------- FILE UPLOAD (PDF / TXT / IMAGE) --------
-@app.route("/upload-file", methods=["POST"])
+@app.route("/upload-file", methods=["GET", "POST"])
 def upload_file():
+    if request.method == "GET":
+        return jsonify({
+            "info": "POST multi-part file to this endpoint (key='file') to upload PDF/TXT/IMAGE",
+            "supported_types": ["pdf", "txt", "png", "jpg", "jpeg"]
+        })
+
     file = request.files.get("file")
 
     if not file:
@@ -143,8 +169,13 @@ def upload_file():
     })
 
 # -------- ASK FROM UPLOADED FILE --------
-@app.route("/ask-file", methods=["POST"])
+@app.route("/ask-file", methods=["GET", "POST"])
 def ask_file():
+    if request.method == "GET":
+        return jsonify({
+            "info": "POST JSON {question:'...'} to query uploaded file context"
+        })
+
     question = request.json.get("question", "")
 
     results = collection.query(
@@ -168,6 +199,13 @@ def ask_file():
 
     answer = gemini_generate(prompt)
     return jsonify({"answer": answer})
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({
+        "error": "Endpoint not found",
+        "available_endpoints": ["/", "/general", "/upload-syllabus", "/syllabus", "/upload-file", "/ask-file"]
+    }), 404
 
 # ---------------- RUN SERVER ----------------
 if __name__ == "__main__":
