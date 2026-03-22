@@ -22,6 +22,7 @@ interface UploadedFile {
   name: string;
   type: string;
   size: number;
+  file?: File;
 }
 
 const STORAGE_KEY = "syllabus_mode_messages";
@@ -79,33 +80,85 @@ const SyllabusMode = () => {
     setIsLoading(true);
     setIsTeaching(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      let response = "";
-      if (files.length === 0) {
-        response = "I notice you haven't uploaded any study materials yet! 📝 Please upload your PDFs, notes, or images first, and then I can teach you based on your syllabus content.";
-      } else {
-        response = `Based on your uploaded materials (${files.map(f => f.name).join(", ")}), let me explain "${content}"!\n\nThis is where Professor Bones would analyze your uploaded documents using the syllabus retriever and provide a contextual explanation based on your curriculum.`;
-      }
+    if (files.length === 0) {
+      setTimeout(() => {
+        const aiMessage: Message = {
+          id: `ai-${Date.now()}`,
+          content: "I notice you haven't uploaded any study materials yet! 📝 Please upload your PDFs, notes, or images first, and then I can teach you based on your syllabus content.",
+          role: "assistant",
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, aiMessage]);
+        setIsLoading(false);
+        setTimeout(() => setIsTeaching(false), 2000);
+      }, 1500);
+      return;
+    }
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/ask-file", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: content })
+      });
+      const data = await response.json();
 
       const aiMessage: Message = {
         id: `ai-${Date.now()}`,
-        content: response,
+        content: data.answer || data.error || "I'm sorry, I couldn't find an answer.",
         role: "assistant",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error(error);
+      const errorMessage: Message = {
+        id: `error-${Date.now()}`,
+        content: "Oops! Backend connection failed. Make sure your python local server is running on port 5000!",
+        role: "assistant",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
       setTimeout(() => setIsTeaching(false), 2000);
-    }, 2000);
+    }
   };
 
-  const handleFilesChange = (newFiles: UploadedFile[]) => {
-    setFiles(newFiles);
-    if (newFiles.length > 0 && files.length === 0) {
+  const handleFilesChange = async (newFiles: UploadedFile[]) => {
+    const justAdded = newFiles.filter(f => f.file);
+    const sanitizedFiles = newFiles.map(f => {
+      const { file, ...rest } = f;
+      return rest;
+    });
+    setFiles(sanitizedFiles);
+
+    if (justAdded.length > 0) {
+      setIsLoading(true);
+      setIsTeaching(true);
+      
+      let successCount = 0;
+      for (const uf of justAdded) {
+        if (!uf.file) continue;
+        const formData = new FormData();
+        formData.append("file", uf.file);
+        try {
+          const res = await fetch("http://127.0.0.1:5000/upload-file", {
+            method: "POST",
+            body: formData
+          });
+          if (res.ok) successCount++;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      
+      setIsLoading(false);
+      setTimeout(() => setIsTeaching(false), 2000);
+
       const confirmMessage: Message = {
         id: `system-${Date.now()}`,
-        content: `Excellent! I've received ${newFiles.length} file(s): ${newFiles.map(f => f.name).join(", ")}.\n\nI'm processing your materials now... 🦴 Ask me anything about your syllabus content!`,
+        content: `Excellent! I've successfully received and processed ${justAdded.length} new file(s).\n\nAsk me anything about this syllabus!`,
         role: "assistant",
         timestamp: new Date(),
       };

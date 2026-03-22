@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Upload, File, X, FileText, Image, FileSpreadsheet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface UploadedFile { id: string; name: string; type: string; size: number; }
+interface UploadedFile { id: string; name: string; type: string; size: number; file?: File; }
 interface FileUploadProps { onFilesChange: (files: UploadedFile[]) => void; files: UploadedFile[]; }
 
 const getFileIcon = (type: string) => {
@@ -24,7 +24,7 @@ const FileUpload = ({ onFilesChange, files }: FileUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const addFiles = (newFiles: File[]) => {
-    const uploaded: UploadedFile[] = newFiles.map((f) => ({ id: `${f.name}-${Date.now()}-${Math.random()}`, name: f.name, type: f.type, size: f.size }));
+    const uploaded: UploadedFile[] = newFiles.map((f) => ({ id: `${f.name}-${Date.now()}-${Math.random()}`, name: f.name, type: f.type, size: f.size, file: f }));
     onFilesChange([...files, ...uploaded]);
   };
 

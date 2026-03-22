@@ -38,18 +38,34 @@ const GeneralMode = () => {
     setIsLoading(true);
     setIsTeaching(true);
 
-    // Simulate AI response (replace with actual backend call)
-    setTimeout(() => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/general", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: content })
+      });
+      const data = await response.json();
+      
       const aiMessage: Message = {
         id: `ai-${Date.now()}`,
-        content: `Ah, excellent question about "${content}"! Let me explain this to you in a way that'll stick to your bones! 💀\n\nThis is where Professor Bones would provide a detailed, engaging explanation. The backend orchestrator would classify your query, estimate its difficulty, and generate a personalized teaching response using the lesson planner and explanation engine.`,
+        content: data.answer || "I'm sorry, I couldn't form a thought right now.",
         role: "assistant",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error(error);
+      const errorMessage: Message = {
+        id: `error-${Date.now()}`,
+        content: "Oops! My brain completely froze. Are you sure my backend server is running on port 5000? 💀",
+        role: "assistant",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-      setTimeout(() => setIsTeaching(false), 2000);
-    }, 2000);
+      setTimeout(() => setIsTeaching(false), 2500);
+    }
   };
 
   const handleToolChange = (tool: Tool) => {
