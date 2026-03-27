@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload } from "lucide-react";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/navbar.jsx";
 import SkeletonProfessor from "@/components/SkeletonProfessor";
-import ChatBox, { Message } from "@/components/ChatBox";
-import Toolbox, { Tool } from "@/components/Toolbox";
+import ChatBox, { Message } from "@/components/chatbox.jsx";
+import Toolbox, { Tool } from "@/components/Toolbox.jsx";
 import DrawingCanvas from "@/components/DrawingCanvas";
-import FileUpload from "@/components/FileUpload";
-import { Button } from "@/components/ui/button";
+import FileUpload from "@/components/fileupload.jsx";
+import { Button } from "@/components/ui/button.jsx";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog.jsx";
 
 interface UploadedFile {
   id: string;

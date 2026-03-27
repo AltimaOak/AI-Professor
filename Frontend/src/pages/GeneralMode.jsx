@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/navbar.jsx";
 import SkeletonProfessor from "@/components/SkeletonProfessor";
-import ChatBox, { Message } from "@/components/ChatBox";
-import Toolbox, { Tool } from "@/components/Toolbox";
+import ChatBox, { Message } from "@/components/chatbox.jsx";
+import Toolbox, { Tool } from "@/components/Toolbox.jsx";
 import DrawingCanvas from "@/components/DrawingCanvas";
 
 const STORAGE_KEY = "general_mode_messages";

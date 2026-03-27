@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Skull, Home, BookOpen, GraduationCap, Info, LogIn } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
-import { Button } from "./ui/button";
+import { Button } from "./ui/button.jsx";
 
 const navItems = [
   { path: "/", label: "Home", icon: Home },

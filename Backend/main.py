@@ -1,10 +1,10 @@
-# main.py
-from Backend.config import Config
-from Backend.app import app
+import uvicorn
+from config import Config
 
 if __name__ == "__main__":
-    app.run(
+    uvicorn.run(
+        "app:app",
         host=Config.HOST,
         port=Config.PORT,
-        debug=Config.DEBUG
+        reload=Config.DEBUG,
     )

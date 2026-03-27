@@ -1,72 +1,37 @@
-# knowledge/syllabus_retriever.py
+from llama_index.core import VectorStoreIndex
+from llama_index.vector_stores.qdrant import QdrantVectorStore
 
-import os
-import faiss
-import pickle
-import numpy as np
-from sentence_transformers import SentenceTransformer
-
-# ---------------- CONFIG ---------------- #
-
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-
-BASE_DIR = os.path.dirname(__file__)
-VECTOR_DB_PATH = os.path.join(BASE_DIR, "syllabus_faiss.index")
-METADATA_PATH = os.path.join(BASE_DIR, "syllabus_chunks.pkl")
-
-TOP_K = 4  # number of chunks to retrieve
-SIMILARITY_THRESHOLD = 0.35  # lower = stricter syllabus matching
-
-# ---------------------------------------- #
-
-# Load embedding model once
-embedding_model = SentenceTransformer(EMBEDDING_MODEL)
+from config import Config
+from core.qdrant_client import get_qdrant_client
 
 
-def _load_vector_db():
-    """Load FAISS index and chunk metadata"""
-    if not os.path.exists(VECTOR_DB_PATH) or not os.path.exists(METADATA_PATH):
-        return None, None
-
-    index = faiss.read_index(VECTOR_DB_PATH)
-
-    with open(METADATA_PATH, "rb") as f:
-        chunks = pickle.load(f)
-
-    return index, chunks
-
-
-def retrieve_syllabus_context(query: str) -> str | None:
+def retrieve_context(question: str, student_id: str, top_k: int = 4) -> str:
     """
-    Retrieves relevant syllabus chunks for a query.
-    Returns combined context string or None if out of syllabus.
+    Searches the student's Qdrant collection for the most relevant chunks.
+    Returns combined context string, or empty string if nothing found.
     """
+    client = get_qdrant_client()
+    collection_name = f"{Config.QDRANT_COLLECTION}_{student_id}"
 
-    index, chunks = _load_vector_db()
+    # Guard: return empty if student has no collection yet
+    try:
+        existing = [c.name for c in client.get_collections().collections]
+        if collection_name not in existing:
+            return ""
+    except Exception:
+        return ""
 
-    if index is None or not chunks:
-        return None
+    vector_store = QdrantVectorStore(
+        client=client,
+        collection_name=collection_name,
+    )
+    index = VectorStoreIndex.from_vector_store(vector_store)
+    retriever = index.as_retriever(similarity_top_k=top_k)
 
-    # Convert query → embedding
-    query_embedding = embedding_model.encode([query]).astype("float32")
-
-    # Search FAISS
-    distances, indices = index.search(query_embedding, TOP_K)
-
-    relevant_chunks = []
-
-    for score, idx in zip(distances[0], indices[0]):
-        if idx == -1:
-            continue
-
-        # FAISS uses distance → convert to similarity
-        similarity = 1 / (1 + score)
-
-        if similarity >= SIMILARITY_THRESHOLD:
-            relevant_chunks.append(chunks[idx])
-
-    if not relevant_chunks:
-        return None
-
-    # Combine chunks into a single context
-    return "\n\n".join(relevant_chunks)
+    try:
+        nodes = retriever.retrieve(question)
+        if not nodes:
+            return ""
+        return "\n\n".join(node.get_content() for node in nodes)
+    except Exception:
+        return ""

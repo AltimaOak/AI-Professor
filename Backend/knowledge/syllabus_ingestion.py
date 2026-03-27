@@ -1,106 +1,105 @@
-# knowledge/syllabus_ingestion.py
-
 import os
-import faiss
-import pickle
-from pypdf import PdfReader
-from sentence_transformers import SentenceTransformer
+import tempfile
+from pathlib import Path
+
+import fitz  # PyMuPDF
+import docx
 from PIL import Image
 import pytesseract
 
-# ---------------- CONFIG ---------------- #
+from llama_index.core import VectorStoreIndex, StorageContext, Document
+from llama_index.vector_stores.qdrant import QdrantVectorStore
 
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-CHUNK_SIZE = 500       # characters per chunk
-CHUNK_OVERLAP = 100    # overlap for context continuity
+from config import Config
+from core.qdrant_client import get_qdrant_client
 
-BASE_DIR = os.path.dirname(__file__)
-VECTOR_DB_PATH = os.path.join(BASE_DIR, "syllabus_faiss.index")
-METADATA_PATH = os.path.join(BASE_DIR, "syllabus_chunks.pkl")
-
-# ---------------------------------------- #
-
-embedding_model = SentenceTransformer(EMBEDDING_MODEL)
+# Uncomment on Windows if tesseract is not on PATH:
+# pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 
-# ---------- TEXT EXTRACTION ---------- #
+# ── Text extractors ──────────────────────────────────────────────────────────
 
-def extract_text_from_pdf(file_path: str) -> str:
-    reader = PdfReader(file_path)
-    text = ""
-    for page in reader.pages:
-        text += page.extract_text() or ""
-    return text
+def _extract_pdf(path: str) -> str:
+    doc = fitz.open(path)
+    return " ".join(page.get_text() for page in doc)
 
-
-def extract_text_from_txt(file_path: str) -> str:
-    with open(file_path, "r", encoding="utf-8") as f:
+def _extract_txt(path: str) -> str:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
+def _extract_docx(path: str) -> str:
+    doc = docx.Document(path)
+    return " ".join(para.text for para in doc.paragraphs if para.text.strip())
 
-def extract_text_from_image(file_path: str) -> str:
-    image = Image.open(file_path)
+def _extract_image(path: str) -> str:
+    image = Image.open(path)
     return pytesseract.image_to_string(image)
 
-
-# ---------- CHUNKING ---------- #
-
-def chunk_text(text: str) -> list[str]:
-    chunks = []
-    start = 0
-
-    while start < len(text):
-        end = start + CHUNK_SIZE
-        chunk = text[start:end].strip()
-        if chunk:
-            chunks.append(chunk)
-        start += CHUNK_SIZE - CHUNK_OVERLAP
-
-    return chunks
-
-
-# ---------- INGESTION PIPELINE ---------- #
-
-def ingest_syllabus(file_path: str):
-    """
-    Main ingestion function.
-    Call this ONCE when syllabus is uploaded.
-    """
-
-    if not os.path.exists(file_path):
-        raise FileNotFoundError("Syllabus file not found")
-
-    # 1️⃣ Extract text
-    if file_path.endswith(".pdf"):
-        text = extract_text_from_pdf(file_path)
-    elif file_path.endswith(".txt"):
-        text = extract_text_from_txt(file_path)
-    elif file_path.lower().endswith((".png", ".jpg", ".jpeg")):
-        text = extract_text_from_image(file_path)
-    else:
-        raise ValueError("Unsupported syllabus file format")
-
-    if not text.strip():
-        raise ValueError("No readable text found in syllabus")
-
-    # 2️⃣ Chunk text
-    chunks = chunk_text(text)
-
-    # 3️⃣ Generate embeddings
-    embeddings = embedding_model.encode(chunks, show_progress_bar=True)
-
-    # 4️⃣ Create FAISS index
-    dimension = embeddings.shape[1]
-    index = faiss.IndexFlatL2(dimension)
-    index.add(embeddings)
-
-    # 5️⃣ Save index + metadata
-    faiss.write_index(index, VECTOR_DB_PATH)
-
-    with open(METADATA_PATH, "wb") as f:
-        pickle.dump(chunks, f)
-
-    return {
-        "status": "success",
-        "chunks_created": len(chunks)
+def _extract_text(path: str, filename: str) -> str:
+    ext = Path(filename).suffix.lower()
+    extractors = {
+        ".pdf":  _extract_pdf,
+        ".txt":  _extract_txt,
+        ".docx": _extract_docx,
+        ".png":  _extract_image,
+        ".jpg":  _extract_image,
+        ".jpeg": _extract_image,
     }
+    if ext not in extractors:
+        raise ValueError(f"Unsupported file type: {ext}")
+    return extractors[ext](path)
+
+
+# ── Main ingestion function ──────────────────────────────────────────────────
+
+def ingest_file(file_bytes: bytes, filename: str, student_id: str) -> dict:
+    """
+    Parses file → chunks → embeds → stores in student's Qdrant collection.
+    Each student gets their own isolated collection: ai_professor_{student_id}
+    """
+    suffix = Path(filename).suffix
+
+    # Write to temp file for extraction
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(file_bytes)
+        tmp_path = tmp.name
+
+    try:
+        raw_text = _extract_text(tmp_path, filename)
+        clean_text = " ".join(raw_text.replace("\n", " ").split())
+
+        if not clean_text.strip():
+            raise ValueError("No text could be extracted from this file.")
+
+        document = Document(
+            text=clean_text,
+            metadata={
+                "filename": filename,
+                "student_id": student_id,
+            },
+        )
+
+        collection_name = f"{Config.QDRANT_COLLECTION}_{student_id}"
+        client = get_qdrant_client()
+
+        vector_store = QdrantVectorStore(
+            client=client,
+            collection_name=collection_name,
+        )
+        storage_context = StorageContext.from_defaults(vector_store=vector_store)
+
+        # LlamaIndex handles chunking + embedding + storing automatically
+        VectorStoreIndex.from_documents(
+            [document],
+            storage_context=storage_context,
+            show_progress=False,
+        )
+
+        return {
+            "status": "success",
+            "filename": filename,
+            "collection": collection_name,
+        }
+
+    finally:
+        os.unlink(tmp_path)

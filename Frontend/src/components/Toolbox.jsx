@@ -7,12 +7,12 @@ import {
   Trash2,
   Hand,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button.jsx";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/components/ui/tooltip.jsx";
 
 export type Tool = "select" | "point" | "draw" | "erase" | "highlight" | "clear";
 
