@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Professor - Syllabus Mode</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #0e0e0e;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        .header {
+            padding: 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #00aaff;
+            border-bottom: 2px solid #222;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .upload-box {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #222;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            background: #222;
+            color: #ccc;
+            border-radius: 10px;
+            border: none;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            margin-top: 15px;
+            padding: 15px;
+            background: #222;
+            color: #fff;
+            border-radius: 10px;
+            border: none;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 15px;
+            background: #00aaff;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .response-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            border: 2px solid #222;
+            min-height: 250px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">Syllabus Teaching Mode</div>
+
+<div class="container">
+
+    <div class="upload-box">
+        <h3>Upload Syllabus File (PDF/Image/TXT)</h3>
+        <input type="file" id="syllabusFile">
+
+        <h3>OR Paste Syllabus Topics</h3>
+        <textarea id="topics" placeholder="Enter topics like: Networking, AI, Cloud, DBMS..."></textarea>
+
+        <button onclick="processSyllabus()">Start Learning</button>
+    </div>
+
+    <div class="response-box" id="responseBox">
+        <p>AI Professor: Upload or enter your syllabus to begin.</p>
+    </div>
+
+</div>
+
+<script>
+function processSyllabus() {
+    let topics = document.getElementById("topics").value.trim();
+    let response = document.getElementById("responseBox");
+
+    if (topics === "") {
+        response.innerHTML = "<p>Please upload a file or enter some topics.</p>";
+        return;
+    }
+
+    response.innerHTML = `<p><strong>Teaching based on your syllabus:</strong></p><p>${topics}</p><hr><p>(AI explanation will appear here)</p>`;
+}
+</script>
+
+</body>
+</html>
