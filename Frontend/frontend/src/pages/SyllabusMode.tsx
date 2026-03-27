@@ -8,27 +8,19 @@ import Navbar from "@/components/Navbar";
 import ChatMessage from "@/components/ChatMessage";
 import FileCard from "@/components/FileCard";
 import QuickChip from "@/components/QuickChip";
+import { fetchFiles, UploadedFileDto } from "@/lib/api";
 
 interface Message {
   role: "user" | "ai";
   content: string;
 }
 
-export interface UploadedFile {
-  name: string;
-  type: "pdf" | "docx" | "image" | "other";
-}
-
 const SyllabusMode = () => {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>(() => {
-    const saved = localStorage.getItem(`uploaded_files_${user?.email || "guest"}`);
-    return saved ? JSON.parse(saved) : [];
-  });
-  
-  const [activeFile, setActiveFile] = useState<string | null>(uploadedFiles[0]?.name ?? null);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFileDto[]>([]);
+  const [activeFile, setActiveFile] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "ai",
@@ -39,6 +31,17 @@ const SyllabusMode = () => {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (user) {
+      fetchFiles().then(files => {
+        setUploadedFiles(files);
+        if (files.length > 0 && !activeFile) {
+          setActiveFile(files[0].name);
+        }
+      }).catch(console.error);
+    }
+  }, [user]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -86,14 +89,16 @@ const SyllabusMode = () => {
       if (['png', 'jpg', 'jpeg'].includes(fileType)) fileType = 'image';
       if (fileType !== 'pdf' && fileType !== 'docx' && fileType !== 'image') fileType = 'other';
       
-      const newFile: UploadedFile = {
+      const newFile: UploadedFileDto = {
+        id: res.file_id || String(Date.now()),
         name: file.name,
-        type: fileType as "pdf" | "docx" | "image" | "other",
+        type: fileType,
+        size: Math.floor(file.size / 1024),
+        uploadedAt: new Date().toISOString()
       };
       
       const newFiles = [newFile, ...uploadedFiles.filter(f => f.name !== file.name)];
       setUploadedFiles(newFiles);
-      localStorage.setItem(`uploaded_files_${studentId}`, JSON.stringify(newFiles));
       setActiveFile(file.name);
     } catch (error) {
       alert("Failed to upload file. Make sure the backend is running.");

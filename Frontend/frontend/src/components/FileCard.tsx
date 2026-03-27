@@ -2,7 +2,7 @@ import { FileText, Image, File, Trash2 } from "lucide-react";
 
 interface FileCardProps {
   name: string;
-  type: "pdf" | "docx" | "image" | "other";
+  type: string;
   date: string;
   onAsk?: () => void;
   onDelete?: () => void;
@@ -28,7 +28,7 @@ const FileCard = ({ name, type, date, onAsk, onDelete, isActive, compact }: File
         }`}
         onClick={onAsk}
       >
-        {iconMap[type]}
+        {iconMap[type as keyof typeof iconMap] || iconMap.other}
         <span className="text-sm truncate flex-1 text-foreground">{name}</span>
         {isActive && (
           <span className="text-[10px] font-medium uppercase tracking-wider text-primary">Active</span>
@@ -39,7 +39,7 @@ const FileCard = ({ name, type, date, onAsk, onDelete, isActive, compact }: File
 
   return (
     <div className="flex items-center gap-4 p-4 bg-card rounded-2xl border border-primary/[0.15] hover:border-primary/30 transition-all duration-200">
-      {iconMap[type]}
+      {iconMap[type as keyof typeof iconMap] || iconMap.other}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-foreground truncate">{name}</p>
         <p className="text-xs text-muted-foreground">{date}</p>

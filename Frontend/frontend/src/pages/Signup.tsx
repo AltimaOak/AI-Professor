@@ -25,6 +25,7 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [authError, setAuthError] = useState("");
 
   const strength = getPasswordStrength(password);
 
@@ -43,9 +44,14 @@ const Signup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setAuthError("");
     if (!validate()) return;
-    await signup(name, email, password);
-    navigate("/dashboard");
+    try {
+      await signup(name, email, password);
+      navigate("/dashboard");
+    } catch (err: any) {
+      setAuthError(err.message);
+    }
   };
 
   return (
@@ -79,6 +85,12 @@ const Signup = () => {
               <h2 className="text-2xl font-bold text-foreground mt-4">Create your account</h2>
               <p className="text-sm text-text-secondary mt-1">Start learning smarter today</p>
             </div>
+
+            {authError && (
+              <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-lg mb-6 text-center">
+                {authError}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>

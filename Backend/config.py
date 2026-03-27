@@ -9,7 +9,6 @@ class Config:
     DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "yes")
     HOST = os.getenv("HOST", "0.0.0.0")
     PORT = int(os.getenv("PORT", 8000))
-    SECRET_KEY = os.getenv("SECRET_KEY", "your_super_secret_key_here")
 
     # LLM Keys
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
@@ -23,3 +22,11 @@ class Config:
 
     # File storage
     UPLOAD_DIR = os.getenv("UPLOAD_DIR", "./uploads")
+
+    # Database
+    DB_URL = os.getenv("DB_URL", "postgresql://postgres:nik05@localhost:5432/ai_professor")
+
+    # JWT
+    JWT_SECRET = os.getenv("JWT_SECRET", "change-this-in-production")
+    JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))  # 24hrs
