@@ -3,8 +3,16 @@ import axios from "axios";
 // Configure base URL depending on environment, assuming FastAPI runs on 8000 locally
 const API_BASE_URL = "http://localhost:8000/api";
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_BASE_URL,
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("auth_token");
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 export interface UploadResponse {
@@ -57,6 +65,24 @@ export const queryGeneral = async (question: string): Promise<QueryResponse> => 
     return response.data;
   } catch (error) {
     console.error("Error querying general:", error);
+    throw error;
+  }
+};
+
+export interface UploadedFileDto {
+  id: string;
+  name: string;
+  type: "pdf" | "docx" | "image" | "other" | string;
+  size: number;
+  uploadedAt: string;
+}
+
+export const fetchFiles = async (): Promise<UploadedFileDto[]> => {
+  try {
+    const response = await api.get("/upload/files");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching files:", error);
     throw error;
   }
 };

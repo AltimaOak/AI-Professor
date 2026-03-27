@@ -4,8 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from core.llama_config import configure_llama
 from routes.upload import router as upload_router
 from routes.query import router as query_router
+from routes.auth import router as auth_router
 
-# Configure LlamaIndex globally before anything else
 configure_llama()
 
 app = FastAPI(
@@ -16,7 +16,11 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Tighten this in production
+    allow_origins=[
+        "http://localhost:8080",
+        "http://localhost:5173",
+        "http://localhost:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -24,7 +28,7 @@ app.add_middleware(
 
 app.include_router(upload_router, prefix="/api/upload", tags=["Upload"])
 app.include_router(query_router, prefix="/api/query", tags=["Query"])
-
+app.include_router(auth_router, prefix="/api/auth", tags=["Auth"])
 
 @app.get("/")
 def root():

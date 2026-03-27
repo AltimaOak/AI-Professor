@@ -14,6 +14,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [authError, setAuthError] = useState("");
 
   const validate = () => {
     const e: typeof errors = {};
@@ -27,9 +28,14 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setAuthError("");
     if (!validate()) return;
-    await login(email, password);
-    navigate("/dashboard");
+    try {
+      await login(email, password);
+      navigate("/dashboard");
+    } catch (err: any) {
+      setAuthError(err.message);
+    }
   };
 
   return (
@@ -63,6 +69,12 @@ const Login = () => {
               <h2 className="text-2xl font-bold text-foreground mt-4">Welcome back</h2>
               <p className="text-sm text-text-secondary mt-1">Sign in to continue learning</p>
             </div>
+
+            {authError && (
+              <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-lg mb-6 text-center">
+                {authError}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>

@@ -1,0 +1,10 @@
+# Root-level Python virtual environment
+venv/
+.venv/
+
+# Frontend build cache (add this line)
+Frontend/frontend/.vite/
+
+# (optional) Already covered by your existing ignores, but safe to repeat:
+__pycache__/
+*.pyc
