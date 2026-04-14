@@ -1,13 +1,18 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import { Canvas as FabricCanvas, PencilBrush, Circle } from "fabric";
+import { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from "react";
+import { Canvas as FabricCanvas, PencilBrush, Circle, IText } from "fabric";
 import type { Tool } from "./Toolbox";
+
+export interface DrawingCanvasHandle {
+  addBoardNotes: (notes: string[]) => void;
+  clear: () => void;
+}
 
 interface DrawingCanvasProps {
   activeTool: Tool;
   onClearRef?: React.MutableRefObject<(() => void) | null>;
 }
 
-const DrawingCanvas = ({ activeTool, onClearRef }: DrawingCanvasProps) => {
+const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>(({ activeTool, onClearRef }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
@@ -18,6 +23,33 @@ const DrawingCanvas = ({ activeTool, onClearRef }: DrawingCanvasProps) => {
     fabricCanvas.backgroundColor = "transparent";
     fabricCanvas.renderAll();
   }, [fabricCanvas]);
+
+  useImperativeHandle(ref, () => ({
+    clear: handleClear,
+    addBoardNotes: (notes: string[]) => {
+      if (!fabricCanvas) return;
+      handleClear();
+      
+      notes.forEach((note, index) => {
+        const text = new IText(note, {
+          left: 50,
+          top: 60 + index * 55,
+          fontSize: 24,
+          fontFamily: 'Inter, sans-serif',
+          fill: 'hsl(172, 66%, 50%)',
+          selectable: true,
+          hasControls: true,
+          opacity: 0,
+        });
+        fabricCanvas.add(text);
+        // Fade in animation
+        text.animate({ opacity: 1 }, {
+          duration: 800,
+          onChange: fabricCanvas.renderAll.bind(fabricCanvas),
+        });
+      });
+    }
+  }));
 
   useEffect(() => {
     if (onClearRef) {
@@ -130,6 +162,8 @@ const DrawingCanvas = ({ activeTool, onClearRef }: DrawingCanvasProps) => {
       <canvas ref={canvasRef} />
     </div>
   );
-};
+});
+
+DrawingCanvas.displayName = "DrawingCanvas";
 
 export default DrawingCanvas;

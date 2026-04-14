@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import SkeletonProfessor from "@/components/SkeletonProfessor";
+import SkeletonProfessor from "@/components/skeletonprofessor";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);

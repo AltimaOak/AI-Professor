@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload } from "lucide-react";
-import Navbar from "@/components/Navbar";
-import SkeletonProfessor from "@/components/SkeletonProfessor";
-import ChatBox, { Message } from "@/components/ChatBox";
+import Navbar from "@/components/navbar";
+import SkeletonProfessor from "@/components/skeletonprofessor";
+import ChatBox, { Message } from "@/components/chatbox";
 import Toolbox, { Tool } from "@/components/Toolbox";
-import DrawingCanvas from "@/components/DrawingCanvas";
-import FileUpload from "@/components/FileUpload";
+import DrawingCanvas from "@/components/drawingcanvas";
+import FileUpload from "@/components/fileupload";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,6 +23,8 @@ interface UploadedFile {
   type: string;
   size: number;
 }
+
+import { api } from "@/lib/api";
 
 const STORAGE_KEY = "syllabus_mode_messages";
 const FILES_KEY = "syllabus_mode_files";
@@ -79,25 +81,35 @@ const SyllabusMode = () => {
     setIsLoading(true);
     setIsTeaching(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      let response = "";
-      if (files.length === 0) {
-        response = "I notice you haven't uploaded any study materials yet! 📝 Please upload your PDFs, notes, or images first, and then I can teach you based on your syllabus content.";
+    try {
+      let data;
+      if (files.length > 0) {
+        data = await api.askFile(content);
       } else {
-        response = `Based on your uploaded materials (${files.map(f => f.name).join(", ")}), let me explain "${content}"!\n\nThis is where Professor Bones would analyze your uploaded documents using the syllabus retriever and provide a contextual explanation based on your curriculum.`;
+        // Fallback or specific syllabus call if no files uploaded yet
+        data = await api.general(content);
       }
 
       const aiMessage: Message = {
         id: `ai-${Date.now()}`,
-        content: response,
+        content: data.answer,
         role: "assistant",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error("Error calling Syllabus API:", error);
+      const errorMessage: Message = {
+        id: `error-${Date.now()}`,
+        content: "Sorry, I had trouble analyzing your syllabus. Please check your connection! 🦴",
+        role: "assistant",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
       setTimeout(() => setIsTeaching(false), 2000);
-    }, 2000);
+    }
   };
 
   const handleFilesChange = (newFiles: UploadedFile[]) => {

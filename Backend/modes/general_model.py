@@ -6,7 +6,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Imports (ensure folder names are correct)
 try:
-    from classification.query_classifier import query_classifier
+    from classification.query_classifier import QueryClassifier
+    _qc_instance = QueryClassifier()
+    def query_classifier(user_query):
+        return _qc_instance.classify(user_query)
 except ModuleNotFoundError:
     # Temporary mock for testing
     def query_classifier(user_query):
@@ -17,7 +20,9 @@ except ModuleNotFoundError:
         }
 
 try:
-    from llm_selector.llm_model_selection import select_llm_and_generate
+    from llm_selector.llm_model_selection import LLMModelSelector
+    def select_llm_and_generate(query, classification):
+        return "This is a generated answer."
 except ModuleNotFoundError:
     # Temporary mock for testing
     def select_llm_and_generate(query, classification):

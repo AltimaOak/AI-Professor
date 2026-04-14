@@ -15,8 +15,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Navbar from "@/components/Navbar";
-import SkeletonProfessor from "@/components/SkeletonProfessor";
+import Navbar from "@/components/navbar";
+import SkeletonProfessor from "@/components/skeletonprofessor";
 
 const tools = [
   {

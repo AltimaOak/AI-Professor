@@ -27,7 +27,7 @@ const SkeletonProfessor = ({ className = "", isTeaching = false, size = "md" }: 
       >
         {/* Skull */}
         <motion.g
-          animate={isTeaching ? { rotate: [-5, 5, -5] } : {}}
+          animate={isTeaching ? { rotate: [-10, 15, -10], y: [0, -5, 0] } : {}}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           style={{ transformOrigin: "100px 50px" }}
         >
@@ -216,7 +216,7 @@ const SkeletonProfessor = ({ className = "", isTeaching = false, size = "md" }: 
 
         {/* Right Arm - Pointing gesture when teaching */}
         <motion.g
-          animate={isTeaching ? { rotate: [-45, -60, -45] } : {}}
+          animate={isTeaching ? { rotate: [-55, -85, -55], x: [0, 5, 0] } : {}}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           style={{ transformOrigin: "145px 128px" }}
         >

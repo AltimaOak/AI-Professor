@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
-import Navbar from "@/components/Navbar";
-import SkeletonProfessor from "@/components/SkeletonProfessor";
-import ChatBox, { Message } from "@/components/ChatBox";
+import { motion, AnimatePresence } from "framer-motion";
+import Navbar from "@/components/navbar";
+import SkeletonProfessor from "@/components/skeletonprofessor";
+import ChatBox, { Message } from "@/components/chatbox";
 import Toolbox, { Tool } from "@/components/Toolbox";
-import DrawingCanvas from "@/components/DrawingCanvas";
+import DrawingCanvas, { DrawingCanvasHandle } from "@/components/drawingcanvas";
+
+import { api } from "@/lib/api";
 
 const STORAGE_KEY = "general_mode_messages";
 
@@ -21,6 +23,7 @@ const GeneralMode = () => {
   const [activeTool, setActiveTool] = useState<Tool>("select");
   const [isTeaching, setIsTeaching] = useState(false);
   const clearCanvasRef = useRef<(() => void) | null>(null);
+  const canvasHandleRef = useRef<DrawingCanvasHandle>(null);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
@@ -38,18 +41,37 @@ const GeneralMode = () => {
     setIsLoading(true);
     setIsTeaching(true);
 
-    // Simulate AI response (replace with actual backend call)
-    setTimeout(() => {
+    try {
+      const data = await api.general(content);
+      
+      // Handle the new structured response
+      const answer = typeof data === 'string' ? data : (data.answer || "I've explained that in the board notes!");
+      const boardNotes = data.board_notes || [];
+
       const aiMessage: Message = {
         id: `ai-${Date.now()}`,
-        content: `Ah, excellent question about "${content}"! Let me explain this to you in a way that'll stick to your bones! 💀\n\nThis is where Professor Bones would provide a detailed, engaging explanation. The backend orchestrator would classify your query, estimate its difficulty, and generate a personalized teaching response using the lesson planner and explanation engine.`,
+        content: answer,
         role: "assistant",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, aiMessage]);
+
+      if (boardNotes.length > 0 && canvasHandleRef.current) {
+        canvasHandleRef.current.addBoardNotes(boardNotes);
+      }
+    } catch (error) {
+      console.error("Error calling AI Professor:", error);
+      const errorMessage: Message = {
+        id: `error-${Date.now()}`,
+        content: "Sorry, I had trouble connecting to the brain center. Please try again! 🦴",
+        role: "assistant",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
       setTimeout(() => setIsTeaching(false), 2000);
-    }, 2000);
+    }
   };
 
   const handleToolChange = (tool: Tool) => {
@@ -69,9 +91,27 @@ const GeneralMode = () => {
           {/* Professor Area */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="hidden lg:flex flex-col items-center justify-center w-64 shrink-0"
+            animate={{ 
+              opacity: 1, 
+              x: isTeaching || isLoading ? 40 : 0,
+              scale: isTeaching || isLoading ? 1.05 : 1
+            }}
+            transition={{ type: "spring", stiffness: 100, damping: 15 }}
+            className="hidden lg:flex flex-col items-center justify-center w-64 shrink-0 relative"
           >
+            <AnimatePresence>
+              {(isTeaching || isLoading) && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0, y: 10 }}
+                  className="absolute -top-12 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-2xl rounded-bl-none shadow-xl z-20 whitespace-nowrap"
+                >
+                  <div className="absolute -bottom-2 left-0 w-4 h-4 bg-primary rotate-45" />
+                  <p className="text-sm font-bold relative z-10">Listen up! 🦴</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <SkeletonProfessor size="lg" isTeaching={isTeaching || isLoading} />
             <motion.div
               initial={{ opacity: 0 }}
@@ -100,7 +140,7 @@ const GeneralMode = () => {
                   <p className="text-sm">Use tools to draw, highlight, or point at concepts</p>
                 </div>
               </div>
-              <DrawingCanvas activeTool={activeTool} onClearRef={clearCanvasRef} />
+              <DrawingCanvas ref={canvasHandleRef} activeTool={activeTool} onClearRef={clearCanvasRef} />
             </motion.div>
 
             {/* Chat Area */}

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import ReactMarkdown from "react-markdown";
 
 export interface Message {
   id: string;
@@ -79,7 +80,15 @@ const ChatBox = ({
                       : "bg-muted text-foreground rounded-bl-md"
                   }`}
                 >
-                  <p className="text-sm leading-relaxed">{message.content}</p>
+                  {message.role === "user" ? (
+                    <p className="text-sm leading-relaxed">{message.content}</p>
+                  ) : (
+                    <div className="prose prose-sm dark:prose-invert leading-relaxed max-w-none">
+                      <ReactMarkdown>
+                        {message.content}
+                      </ReactMarkdown>
+                    </div>
+                  )}
                   <span className="text-xs opacity-60 mt-1 block">
                     {message.timestamp.toLocaleTimeString([], {
                       hour: "2-digit",

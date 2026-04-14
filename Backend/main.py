@@ -1,6 +1,9 @@
 # main.py
-from Backend.config import Config
-from Backend.app import app
+import sys, os
+sys.path.insert(0, os.path.dirname(__file__))
+
+from config import Config
+from app import app
 
 if __name__ == "__main__":
     app.run(

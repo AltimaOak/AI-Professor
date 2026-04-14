@@ -1,0 +1,258 @@
+
+> vite_react_shadcn_ts@0.0.0 build
+> vite build
+
+[36mvite v5.2.10 [32mbuilding for production...[36m[39m
+transforming...
+node.exe : node_module
+s/@tanstack/react-quer
+y/build/modern/useQuer
+y.js (1:0): Module 
+level directives 
+cause errors when 
+bundled, "use client" 
+in "node_modules/@tans
+tack/react-query/build
+/modern/useQuery.js" 
+was ignored.
+At line:1 char:1
++ & "C:\Program Files\
+nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (node_modul   
+ es/@t...s" was ig    
+nored.:String) []    
+, RemoteException
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+node_modules/@tanstack
+/react-query/build/mod
+ern/useQueries.js 
+(1:0): Module level 
+directives cause 
+errors when bundled, 
+"use client" in "node_
+modules/@tanstack/reac
+t-query/build/modern/u
+seQueries.js" was 
+ignored.
+node_modules/@tanstack
+/react-query/build/mod
+ern/QueryClientProvide
+r.js (1:0): Module 
+level directives 
+cause errors when 
+bundled, "use client" 
+in "node_modules/@tans
+tack/react-query/build
+/modern/QueryClientPro
+vider.js" was ignored.
+node_modules/@tanstack
+/react-query/build/mod
+ern/HydrationBoundary.
+js (1:0): Module 
+level directives 
+cause errors when 
+bundled, "use client" 
+in "node_modules/@tans
+tack/react-query/build
+/modern/HydrationBound
+ary.js" was ignored.
+node_modules/@tanstack
+/react-query/build/mod
+ern/useInfiniteQuery.j
+s (1:0): Module level 
+directives cause 
+errors when bundled, 
+"use client" in "node_
+modules/@tanstack/reac
+t-query/build/modern/u
+seInfiniteQuery.js" 
+was ignored.
+node_modules/@tanstack
+/react-query/build/mod
+ern/useMutation.js 
+(1:0): Module level 
+directives cause 
+errors when bundled, 
+"use client" in "node_
+modules/@tanstack/reac
+t-query/build/modern/u
+seMutation.js" was 
+ignored.
+node_modules/@tanstack
+/react-query/build/mod
+ern/useMutationState.j
+s (1:0): Module level 
+directives cause 
+errors when bundled, 
+"use client" in "node_
+modules/@tanstack/reac
+t-query/build/modern/u
+seMutationState.js" 
+was ignored.
+node_modules/@tanstack
+/react-query/build/mod
+ern/useIsFetching.js 
+(1:0): Module level 
+directives cause 
+errors when bundled, 
+"use client" in "node_
+modules/@tanstack/reac
+t-query/build/modern/u
+seIsFetching.js" was 
+ignored.
+node_modules/@tanstack
+/react-query/build/mod
+ern/IsRestoringProvide
+r.js (1:0): Module 
+level directives 
+cause errors when 
+bundled, "use client" 
+in "node_modules/@tans
+tack/react-query/build
+/modern/IsRestoringPro
+vider.js" was ignored.
+node_modules/@tanstack
+/react-query/build/mod
+ern/QueryErrorResetBou
+ndary.js (1:0): 
+Module level 
+directives cause 
+errors when bundled, 
+"use client" in "node_
+modules/@tanstack/reac
+t-query/build/modern/Q
+ueryErrorResetBoundary
+.js" was ignored.
+node_modules/@tanstack
+/react-query/build/mod
+ern/useSuspenseInfinit
+eQuery.js (1:0): 
+Module level 
+directives cause 
+errors when bundled, 
+"use client" in "node_
+modules/@tanstack/reac
+t-query/build/modern/u
+seSuspenseInfiniteQuer
+y.js" was ignored.
+node_modules/@tanstack
+/react-query/build/mod
+ern/useSuspenseQuery.j
+s (1:0): Module level 
+directives cause 
+errors when bundled, 
+"use client" in "node_
+modules/@tanstack/reac
+t-query/build/modern/u
+seSuspenseQuery.js" 
+was ignored.
+node_modules/@tanstack
+/react-query/build/mod
+ern/useSuspenseQueries
+.js (1:0): Module 
+level directives 
+cause errors when 
+bundled, "use client" 
+in "node_modules/@tans
+tack/react-query/build
+/modern/useSuspenseQue
+ries.js" was ignored.
+node_modules/@tanstack
+/react-query/build/mod
+ern/errorBoundaryUtils
+.js (1:0): Module 
+level directives 
+cause errors when 
+bundled, "use client" 
+in "node_modules/@tans
+tack/react-query/build
+/modern/errorBoundaryU
+tils.js" was ignored.
+node_modules/@tanstack
+/react-query/build/mod
+ern/useBaseQuery.js 
+(1:0): Module level 
+directives cause 
+errors when bundled, 
+"use client" in "node_
+modules/@tanstack/reac
+t-query/build/modern/u
+seBaseQuery.js" was 
+ignored.
+[32m???[39m 64 modules transformed.
+[31mx[39m Build 
+failed in 1.15s
+[31merror during 
+build:
+Error: [31m[vite]: 
+Rollup failed to 
+resolve import 
+"@/lib/utils" from "D:
+/aiptest/AI-Professor/
+Frontend/src/component
+s/ui/tooltip.tsx".
+This is most likely 
+unintended because it 
+can break your 
+application at 
+runtime.
+If you do want to 
+externalize this 
+module explicitly add 
+it to
+`build.rollupOptions.e
+xternal`[31m
+    at viteWarn (file:
+///D:/aiptest/AI-Profe
+ssor/Frontend/node_mod
+ules/vite/dist/node/ch
+unks/dep-DkOS1hkm.js:6
+7620:27)
+    at 
+onRollupWarning (file:
+///D:/aiptest/AI-Profe
+ssor/Frontend/node_mod
+ules/vite/dist/node/ch
+unks/dep-DkOS1hkm.js:6
+7648:9)
+    at onwarn (file://
+/D:/aiptest/AI-Profess
+or/Frontend/node_modul
+es/vite/dist/node/chun
+ks/dep-DkOS1hkm.js:673
+64:13)
+    at file:///D:/aipt
+est/AI-Professor/Front
+end/node_modules/rollu
+p/dist/es/shared/node-
+entry.js:21095:13
+    at Object.logger 
+[as onLog] (file:///D:
+/aiptest/AI-Professor/
+Frontend/node_modules/
+rollup/dist/es/shared/
+node-entry.js:22968:9)
+    at ModuleLoader.ha
+ndleInvalidResolvedId 
+(file:///D:/aiptest/AI
+-Professor/Frontend/no
+de_modules/rollup/dist
+/es/shared/node-entry.
+js:21712:26)
+    at file:///D:/aipt
+est/AI-Professor/Front
+end/node_modules/rollu
+p/dist/es/shared/node-
+entry.js:21670:26[39m

@@ -2,6 +2,8 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, File, X, FileText, Image, FileSpreadsheet } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api";
+import { toast } from "sonner";
 
 interface UploadedFile {
   id: string;
@@ -30,6 +32,7 @@ const formatFileSize = (bytes: number) => {
 
 const FileUpload = ({ onFilesChange, files }: FileUploadProps) => {
   const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -56,14 +59,30 @@ const FileUpload = ({ onFilesChange, files }: FileUploadProps) => {
     }
   };
 
-  const addFiles = (newFiles: File[]) => {
-    const uploadedFiles: UploadedFile[] = newFiles.map((file) => ({
-      id: `${file.name}-${Date.now()}-${Math.random()}`,
-      name: file.name,
-      type: file.type,
-      size: file.size,
-    }));
-    onFilesChange([...files, ...uploadedFiles]);
+  const addFiles = async (newFiles: File[]) => {
+    setIsUploading(true);
+    const newUploadedFiles: UploadedFile[] = [];
+
+    for (const file of newFiles) {
+      try {
+        await api.uploadFile(file);
+        newUploadedFiles.push({
+          id: `${file.name}-${Date.now()}-${Math.random()}`,
+          name: file.name,
+          type: file.type,
+          size: file.size,
+        });
+        toast.success(`Uploaded ${file.name}`);
+      } catch (error) {
+        console.error(`Failed to upload ${file.name}:`, error);
+        toast.error(`Failed to upload ${file.name}`);
+      }
+    }
+
+    if (newUploadedFiles.length > 0) {
+      onFilesChange([...files, ...newUploadedFiles]);
+    }
+    setIsUploading(false);
   };
 
   const removeFile = (id: string) => {

@@ -1,0 +1,594 @@
+﻿python : C:\Users\adi14\AppData\Local
+\Programs\Python\Python310\lib\site-p
+ackages\google\api_core\_python_versi
+on_support.py:275: FutureWarning: 
+You are using a Python version 
+(3.10.10) which Google will stop 
+supporting in new releases of 
+google.api_core once it reaches its 
+end of life (2026-10-04). Please 
+upgrade to the latest Python 
+version, or at least Python 3.11, to 
+continue receiving updates for 
+google.api_core past that date.
+At line:1 char:1
++ python app.py 2>&1 | Out-File 
+-FilePath 
+"d:\aiptest\AI-Professor\Back ...
++ ~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpe 
+   cified: (C:\Users\adi14\...past   
+  that date.:String) [], RemoteExc   
+ eption
+    + FullyQualifiedErrorId : Native 
+   CommandError
+ 
+  warnings.warn(message, 
+FutureWarning)
+ * Serving Flask app 'app'
+ * Debug mode: on
+WARNING: This is a development 
+server. Do not use it in a 
+production deployment. Use a 
+production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on 
+http://192.168.0.107:8000
+Press CTRL+C to quit
+ * Restarting with stat
+C:\Users\adi14\AppData\Local\Programs
+\Python\Python310\lib\site-packages\g
+oogle\api_core\_python_version_suppor
+t.py:275: FutureWarning: You are 
+using a Python version (3.10.10) 
+which Google will stop supporting in 
+new releases of google.api_core once 
+it reaches its end of life 
+(2026-10-04). Please upgrade to the 
+latest Python version, or at least 
+Python 3.11, to continue receiving 
+updates for google.api_core past 
+that date.
+  warnings.warn(message, 
+FutureWarning)
+ * Debugger is active!
+ * Debugger PIN: 145-188-761
+127.0.0.1 - - [06/Apr/2026 21:35:53] 
+"POST /general HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\grpc_helpers.p
+y", line 55, in 
+error_remapped_callable
+    return callable_(*args, **kwargs)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\grpc\_channel.py", line 1159, 
+in __call__
+    return 
+_end_unary_response_blocking(state, 
+call, False, None)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\grpc\_channel.py", line 990, 
+in _end_unary_response_blocking
+    raise _InactiveRpcError(state)  
+# pytype: disable=not-instantiable
+grpc._channel._InactiveRpcError: 
+<_InactiveRpcError of RPC that 
+terminated with:
+	status = 
+StatusCode.RESOURCE_EXHAUSTED
+	details = "You exceeded your 
+current quota, please check your 
+plan and billing details. For more 
+information on this error, head to: h
+ttps://ai.google.dev/gemini-api/docs/
+rate-limits. To monitor your current 
+usage, head to: 
+https://ai.dev/rate-limit. 
+* Quota exceeded for metric: generati
+velanguage.googleapis.com/generate_co
+ntent_free_tier_input_token_count, 
+limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generati
+velanguage.googleapis.com/generate_co
+ntent_free_tier_requests, limit: 0, 
+model: gemini-2.0-flash
+* Quota exceeded for metric: generati
+velanguage.googleapis.com/generate_co
+ntent_free_tier_requests, limit: 0, 
+model: gemini-2.0-flash
+Please retry in 7.272789387s."
+	debug_error_string = "UNKNOWN:Error 
+received from peer 
+ipv4:216.239.34.223:443 
+{grpc_message:"You exceeded your 
+current quota, please check your 
+plan and billing details. For more 
+information on this error, head to: h
+ttps://ai.google.dev/gemini-api/docs/
+rate-limits. To monitor your current 
+usage, head to: 
+https://ai.dev/rate-limit. \n* Quota 
+exceeded for metric: generativelangua
+ge.googleapis.com/generate_content_fr
+ee_tier_input_token_count, limit: 0, 
+model: gemini-2.0-flash\n* Quota 
+exceeded for metric: generativelangua
+ge.googleapis.com/generate_content_fr
+ee_tier_requests, limit: 0, model: 
+gemini-2.0-flash\n* Quota exceeded 
+for metric: generativelanguage.google
+apis.com/generate_content_free_tier_r
+equests, limit: 0, model: 
+gemini-2.0-flash\nPlease retry in 
+7.272789387s.", grpc_status:8}"
+>
+
+The above exception was the direct 
+cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask\app.py", line 1478, in 
+__call__
+    return self.wsgi_app(environ, 
+start_response)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask\app.py", line 1458, in 
+wsgi_app
+    response = 
+self.handle_exception(e)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask_cors\extension.py", 
+line 176, in wrapped_function
+    return cors_after_request(app.mak
+e_response(f(*args, **kwargs)))
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask\app.py", line 1455, in 
+wsgi_app
+    response = 
+self.full_dispatch_request()
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask\app.py", line 869, in 
+full_dispatch_request
+    rv = 
+self.handle_user_exception(e)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask_cors\extension.py", 
+line 176, in wrapped_function
+    return cors_after_request(app.mak
+e_response(f(*args, **kwargs)))
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask\app.py", line 867, in 
+full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask\app.py", line 852, in 
+dispatch_request
+    return self.ensure_sync(self.view
+_functions[rule.endpoint])(**view_arg
+s)
+  File "D:\aiptest\AI-Professor\Backe
+nd\app.py", line 93, in general_mode
+    answer = gemini_generate(prompt)
+  File "D:\aiptest\AI-Professor\Backe
+nd\app.py", line 66, in 
+gemini_generate
+    response = 
+gemini_model.generate_content(prompt)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\generativeai\generative
+_models.py", line 331, in 
+generate_content
+    response = 
+self._client.generate_content(
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\ai\generativelanguage_v
+1beta\services\generative_service\cli
+ent.py", line 830, in 
+generate_content
+    response = rpc(
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\gapic_v1\metho
+d.py", line 128, in __call__
+    return wrapped_func(*args, 
+**kwargs)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\retry\retry_un
+ary.py", line 294, in 
+retry_wrapped_func
+    return retry_target(
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\retry\retry_un
+ary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\retry\retry_ba
+se.py", line 216, in 
+_retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\retry\retry_un
+ary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\timeout.py", 
+line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\grpc_helpers.p
+y", line 57, in 
+error_remapped_callable
+    raise 
+exceptions.from_grpc_error(exc) from 
+exc
+google.api_core.exceptions.ResourceEx
+hausted: 429 You exceeded your 
+current quota, please check your 
+plan and billing details. For more 
+information on this error, head to: h
+ttps://ai.google.dev/gemini-api/docs/
+rate-limits. To monitor your current 
+usage, head to: 
+https://ai.dev/rate-limit. 
+* Quota exceeded for metric: generati
+velanguage.googleapis.com/generate_co
+ntent_free_tier_input_token_count, 
+limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generati
+velanguage.googleapis.com/generate_co
+ntent_free_tier_requests, limit: 0, 
+model: gemini-2.0-flash
+* Quota exceeded for metric: generati
+velanguage.googleapis.com/generate_co
+ntent_free_tier_requests, limit: 0, 
+model: gemini-2.0-flash
+Please retry in 7.272789387s. [links 
+{
+  description: "Learn more about 
+Gemini API quotas"
+  url: "https://ai.google.dev/gemini-
+api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.g
+oogleapis.com/generate_content_free_t
+ier_input_token_count"
+  quota_id: "GenerateContentInputToke
+nsPerModelPerMinute-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.0-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+}
+violations {
+  quota_metric: "generativelanguage.g
+oogleapis.com/generate_content_free_t
+ier_requests"
+  quota_id: "GenerateRequestsPerMinut
+ePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.0-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+}
+violations {
+  quota_metric: "generativelanguage.g
+oogleapis.com/generate_content_free_t
+ier_requests"
+  quota_id: "GenerateRequestsPerDayPe
+rProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.0-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+}
+, retry_delay {
+  seconds: 7
+}
+]
+127.0.0.1 - - [06/Apr/2026 21:36:07] 
+"GET /syllabus HTTP/1.1" 200 -
+127.0.0.1 - - [06/Apr/2026 21:39:41] 
+"GET / HTTP/1.1" 200 -
+127.0.0.1 - - [06/Apr/2026 21:40:08] 
+"OPTIONS /general HTTP/1.1" 200 -
+127.0.0.1 - - [06/Apr/2026 21:40:09] 
+"POST /general HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\grpc_helpers.p
+y", line 55, in 
+error_remapped_callable
+    return callable_(*args, **kwargs)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\grpc\_channel.py", line 1159, 
+in __call__
+    return 
+_end_unary_response_blocking(state, 
+call, False, None)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\grpc\_channel.py", line 990, 
+in _end_unary_response_blocking
+    raise _InactiveRpcError(state)  
+# pytype: disable=not-instantiable
+grpc._channel._InactiveRpcError: 
+<_InactiveRpcError of RPC that 
+terminated with:
+	status = 
+StatusCode.RESOURCE_EXHAUSTED
+	details = "You exceeded your 
+current quota, please check your 
+plan and billing details. For more 
+information on this error, head to: h
+ttps://ai.google.dev/gemini-api/docs/
+rate-limits. To monitor your current 
+usage, head to: 
+https://ai.dev/rate-limit. 
+* Quota exceeded for metric: generati
+velanguage.googleapis.com/generate_co
+ntent_free_tier_input_token_count, 
+limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generati
+velanguage.googleapis.com/generate_co
+ntent_free_tier_requests, limit: 0, 
+model: gemini-2.0-flash
+* Quota exceeded for metric: generati
+velanguage.googleapis.com/generate_co
+ntent_free_tier_requests, limit: 0, 
+model: gemini-2.0-flash
+Please retry in 51.038311771s."
+	debug_error_string = "UNKNOWN:Error 
+received from peer 
+ipv4:216.239.36.223:443 
+{grpc_message:"You exceeded your 
+current quota, please check your 
+plan and billing details. For more 
+information on this error, head to: h
+ttps://ai.google.dev/gemini-api/docs/
+rate-limits. To monitor your current 
+usage, head to: 
+https://ai.dev/rate-limit. \n* Quota 
+exceeded for metric: generativelangua
+ge.googleapis.com/generate_content_fr
+ee_tier_input_token_count, limit: 0, 
+model: gemini-2.0-flash\n* Quota 
+exceeded for metric: generativelangua
+ge.googleapis.com/generate_content_fr
+ee_tier_requests, limit: 0, model: 
+gemini-2.0-flash\n* Quota exceeded 
+for metric: generativelanguage.google
+apis.com/generate_content_free_tier_r
+equests, limit: 0, model: 
+gemini-2.0-flash\nPlease retry in 
+51.038311771s.", grpc_status:8}"
+>
+
+The above exception was the direct 
+cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask\app.py", line 1478, in 
+__call__
+    return self.wsgi_app(environ, 
+start_response)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask\app.py", line 1458, in 
+wsgi_app
+    response = 
+self.handle_exception(e)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask_cors\extension.py", 
+line 176, in wrapped_function
+    return cors_after_request(app.mak
+e_response(f(*args, **kwargs)))
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask\app.py", line 1455, in 
+wsgi_app
+    response = 
+self.full_dispatch_request()
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask\app.py", line 869, in 
+full_dispatch_request
+    rv = 
+self.handle_user_exception(e)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask_cors\extension.py", 
+line 176, in wrapped_function
+    return cors_after_request(app.mak
+e_response(f(*args, **kwargs)))
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask\app.py", line 867, in 
+full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\flask\app.py", line 852, in 
+dispatch_request
+    return self.ensure_sync(self.view
+_functions[rule.endpoint])(**view_arg
+s)
+  File "D:\aiptest\AI-Professor\Backe
+nd\app.py", line 93, in general_mode
+    answer = gemini_generate(prompt)
+  File "D:\aiptest\AI-Professor\Backe
+nd\app.py", line 66, in 
+gemini_generate
+    response = 
+gemini_model.generate_content(prompt)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\generativeai\generative
+_models.py", line 331, in 
+generate_content
+    response = 
+self._client.generate_content(
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\ai\generativelanguage_v
+1beta\services\generative_service\cli
+ent.py", line 830, in 
+generate_content
+    response = rpc(
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\gapic_v1\metho
+d.py", line 128, in __call__
+    return wrapped_func(*args, 
+**kwargs)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\retry\retry_un
+ary.py", line 294, in 
+retry_wrapped_func
+    return retry_target(
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\retry\retry_un
+ary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\retry\retry_ba
+se.py", line 216, in 
+_retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\retry\retry_un
+ary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\timeout.py", 
+line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\adi14\AppData\Local\
+Programs\Python\Python310\lib\site-pa
+ckages\google\api_core\grpc_helpers.p
+y", line 57, in 
+error_remapped_callable
+    raise 
+exceptions.from_grpc_error(exc) from 
+exc
+google.api_core.exceptions.ResourceEx
+hausted: 429 You exceeded your 
+current quota, please check your 
+plan and billing details. For more 
+information on this error, head to: h
+ttps://ai.google.dev/gemini-api/docs/
+rate-limits. To monitor your current 
+usage, head to: 
+https://ai.dev/rate-limit. 
+* Quota exceeded for metric: generati
+velanguage.googleapis.com/generate_co
+ntent_free_tier_input_token_count, 
+limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generati
+velanguage.googleapis.com/generate_co
+ntent_free_tier_requests, limit: 0, 
+model: gemini-2.0-flash
+* Quota exceeded for metric: generati
+velanguage.googleapis.com/generate_co
+ntent_free_tier_requests, limit: 0, 
+model: gemini-2.0-flash
+Please retry in 51.038311771s. 
+[links {
+  description: "Learn more about 
+Gemini API quotas"
+  url: "https://ai.google.dev/gemini-
+api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.g
+oogleapis.com/generate_content_free_t
+ier_input_token_count"
+  quota_id: "GenerateContentInputToke
+nsPerModelPerMinute-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.0-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+}
+violations {
+  quota_metric: "generativelanguage.g
+oogleapis.com/generate_content_free_t
+ier_requests"
+  quota_id: "GenerateRequestsPerMinut
+ePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.0-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+}
+violations {
+  quota_metric: "generativelanguage.g
+oogleapis.com/generate_content_free_t
+ier_requests"
+  quota_id: "GenerateRequestsPerDayPe
+rProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.0-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+}
+, retry_delay {
+  seconds: 51
+}
+]

@@ -1,5 +1,8 @@
 # llm_selector/llm_model_selection.py
-from Backend.config import Config
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from config import Config
 
 class LLMModelSelector:
     """

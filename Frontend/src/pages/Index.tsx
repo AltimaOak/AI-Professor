@@ -2,8 +2,8 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { BookOpen, GraduationCap, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import SkeletonProfessor from "@/components/SkeletonProfessor";
-import Navbar from "@/components/Navbar";
+import SkeletonProfessor from "@/components/skeletonprofessor";
+import Navbar from "@/components/navbar";
 
 const Index = () => {
   return (
