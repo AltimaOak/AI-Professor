@@ -16,30 +16,42 @@ const Navbar = () => {
 
   return (
     <motion.nav
-      initial={{ y: -20, opacity: 0 }}
+      initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="fixed top-0 left-0 right-0 z-50 px-4 py-3"
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="fixed top-0 left-0 right-0 z-50 px-6 py-6"
     >
       <div className="max-w-7xl mx-auto">
-        <div className="glass-effect rounded-2xl px-4 py-2 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 group">
-            <motion.div whileHover={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 0.5 }}>
-              <Skull className="w-8 h-8 text-primary" />
+        <div className="glass-card px-6 py-3 flex items-center justify-between shadow-2xl">
+          <Link to="/" className="flex items-center gap-3 group">
+            <motion.div 
+              whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }} 
+              transition={{ duration: 0.5 }}
+              className="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center shadow-glow"
+            >
+              <Skull className="w-6 h-6 text-primary-foreground" />
             </motion.div>
-            <span className="font-display font-bold text-lg gradient-text">Professor Bones</span>
+            <span className="font-display font-black text-xl tracking-tighter gradient-text">PROFESSOR BONES</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               return (
                 <Link key={item.path} to={item.path}>
-                  <Button variant="ghost" className={`relative px-4 py-2 transition-all duration-200 ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+                  <Button 
+                    variant="ghost" 
+                    className={`relative px-5 py-2.5 rounded-xl transition-all duration-300 font-bold text-sm uppercase tracking-widest ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-white/5"}`}
+                  >
                     <Icon className="w-4 h-4 mr-2" />
                     {item.label}
                     {isActive && (
-                      <motion.div layoutId="navIndicator" className="absolute bottom-0 left-2 right-2 h-0.5 gradient-bg rounded-full" transition={{ type: "spring", stiffness: 500, damping: 30 }} />
+                      <motion.div 
+                        layoutId="navIndicator" 
+                        className="absolute -bottom-1 left-4 right-4 h-1 gradient-bg rounded-full shadow-glow" 
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }} 
+                      />
                     )}
                   </Button>
                 </Link>
@@ -47,12 +59,12 @@ const Navbar = () => {
             })}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+            <div className="h-8 w-[1px] bg-white/10 hidden sm:block" />
             <ThemeToggle />
             <Link to="/login">
-              <Button variant="outline" size="sm" className="hidden sm:flex">
-                <LogIn className="w-4 h-4 mr-2" />
-                Login
+              <Button size="sm" className="hidden sm:flex rounded-xl font-bold uppercase tracking-widest text-[10px] h-10 px-6 gradient-bg shadow-glow hover:scale-105 transition-all">
+                Join Class
               </Button>
             </Link>
           </div>

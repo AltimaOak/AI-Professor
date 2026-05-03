@@ -32,135 +32,142 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen gradient-hero flex items-center justify-center p-4">
+    <div className="min-h-screen gradient-hero flex items-center justify-center p-6">
       {/* Background decoration */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-          className="absolute top-20 right-20 w-60 h-60 rounded-full bg-primary/10 blur-3xl"
+          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+          transition={{ duration: 15, repeat: Infinity }}
+          className="absolute top-20 right-20 w-96 h-96 rounded-full bg-primary/20 blur-[100px]"
         />
         <motion.div
-          animate={{ rotate: -360 }}
-          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-20 left-20 w-40 h-40 rounded-full bg-secondary/10 blur-3xl"
+          animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.15, 0.1] }}
+          transition={{ duration: 20, repeat: Infinity }}
+          className="absolute bottom-20 left-20 w-80 h-80 rounded-full bg-secondary/20 blur-[100px]"
         />
       </div>
 
-      <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-8 items-center">
+      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-16 items-center relative z-10">
         {/* Left - Professor */}
         <motion.div
-          initial={{ opacity: 0, x: -30 }}
+          initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="hidden lg:flex flex-col items-center"
         >
-          <SkeletonProfessor size="lg" isTeaching />
+          <div className="p-12 glass-card animate-float shadow-2xl">
+             <SkeletonProfessor size="lg" isTeaching />
+          </div>
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="mt-6 text-center"
+            className="mt-10 text-center glass-effect px-8 py-6 rounded-3xl border border-white/10"
           >
-            <h2 className="font-display text-2xl font-bold mb-2">
-              Professor Bones
+            <h2 className="font-display text-3xl font-black tracking-tighter mb-2">
+              PROFESSOR BONES
             </h2>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground font-medium max-w-sm">
               {isLogin
-                ? "Welcome back! I've been waiting to teach you more!"
-                : "Excited to meet a new student! Let's learn together!"}
+                ? "Class is in session! Ready to dive back into the knowledge pool? 💀"
+                : "A new student! I've got so many bones to share with you! 🦴"}
             </p>
           </motion.div>
         </motion.div>
 
         {/* Right - Form */}
         <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="w-full max-w-md mx-auto"
         >
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
+            className="inline-flex items-center gap-3 text-muted-foreground hover:text-primary mb-8 transition-all font-bold uppercase tracking-widest text-xs group"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
+            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+               <ArrowLeft className="w-4 h-4" />
+            </div>
+            Back to Campus
           </Link>
 
-          <div className="glass-effect rounded-3xl p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center">
-                <Skull className="w-6 h-6 text-primary-foreground" />
+          <div className="glass-card p-10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)]">
+            <div className="flex items-center gap-4 mb-10">
+              <div className="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center shadow-glow">
+                <Skull className="w-8 h-8 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="font-display text-2xl font-bold">
-                  {isLogin ? "Welcome Back" : "Join Us"}
+                <h1 className="font-display text-3xl font-black tracking-tight">
+                  {isLogin ? "Welcome Back" : "Join the Class"}
                 </h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm font-medium text-muted-foreground mt-1">
                   {isLogin
-                    ? "Continue your learning journey"
-                    : "Start learning with Professor Bones"}
+                    ? "Your journey continues here."
+                    : "Create your student profile today."}
                 </p>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {!isLogin && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
                 >
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="John Doe"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="mt-1.5"
-                    required={!isLogin}
-                  />
+                  <Label htmlFor="name" className="text-xs font-black uppercase tracking-widest opacity-60 ml-1">Full Name</Label>
+                  <div className="relative mt-2">
+                     <Input
+                       id="name"
+                       type="text"
+                       placeholder="Enter your name"
+                       value={name}
+                       onChange={(e) => setName(e.target.value)}
+                       className="h-14 px-6 rounded-2xl bg-white/5 dark:bg-black/20 border-white/10 focus:border-primary/50 transition-all font-medium"
+                       required={!isLogin}
+                     />
+                  </div>
                 </motion.div>
               )}
 
               <div>
-                <Label htmlFor="email">Email</Label>
-                <div className="relative mt-1.5">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Label htmlFor="email" className="text-xs font-black uppercase tracking-widest opacity-60 ml-1">Student Email</Label>
+                <div className="relative mt-2">
+                  <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground opacity-40" />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="you@university.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10"
+                    className="h-14 pl-14 pr-6 rounded-2xl bg-white/5 dark:bg-black/20 border-white/10 focus:border-primary/50 transition-all font-medium"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="password">Password</Label>
-                <div className="relative mt-1.5">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Label htmlFor="password" className="text-xs font-black uppercase tracking-widest opacity-60 ml-1">Secret Key</Label>
+                <div className="relative mt-2">
+                  <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground opacity-40" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10"
+                    className="h-14 pl-14 pr-14 rounded-2xl bg-white/5 dark:bg-black/20 border-white/10 focus:border-primary/50 transition-all font-medium"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
                   >
                     {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
+                      <EyeOff className="w-5 h-5" />
                     ) : (
-                      <Eye className="w-4 h-4" />
+                      <Eye className="w-5 h-5" />
                     )}
                   </button>
                 </div>
@@ -170,16 +177,16 @@ const Login = () => {
                 <div className="text-right">
                   <button
                     type="button"
-                    className="text-sm text-primary hover:underline"
+                    className="text-xs font-bold text-primary hover:underline uppercase tracking-widest"
                   >
-                    Forgot password?
+                    Forgot access?
                   </button>
                 </div>
               )}
 
               <Button
                 type="submit"
-                className="w-full gradient-bg text-primary-foreground"
+                className="h-14 w-full rounded-2xl gradient-bg text-primary-foreground font-black uppercase tracking-widest shadow-glow hover:scale-[1.02] transition-all"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -187,24 +194,24 @@ const Login = () => {
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                   >
-                    <Skull className="w-5 h-5" />
+                    <Skull className="w-6 h-6" />
                   </motion.div>
                 ) : isLogin ? (
-                  "Sign In"
+                  "Access Knowledge"
                 ) : (
-                  "Create Account"
+                  "Initialize Profile"
                 )}
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground">
-                {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+            <div className="mt-10 text-center">
+              <p className="text-sm font-medium text-muted-foreground">
+                {isLogin ? "New to the classroom?" : "Already a student?"}{" "}
                 <button
                   onClick={() => setIsLogin(!isLogin)}
-                  className="text-primary font-medium hover:underline"
+                  className="text-primary font-black uppercase tracking-widest text-xs ml-1 hover:underline"
                 >
-                  {isLogin ? "Sign up" : "Sign in"}
+                  {isLogin ? "Register Now" : "Sign In"}
                 </button>
               </p>
             </div>

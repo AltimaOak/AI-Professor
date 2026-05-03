@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles, BookOpen } from "lucide-react";
 import Navbar from "@/components/navbar";
 import SkeletonProfessor from "@/components/skeletonprofessor";
 import ChatBox, { Message } from "@/components/chatbox";
@@ -86,60 +87,82 @@ const GeneralMode = () => {
     <div className="min-h-screen gradient-hero">
       <Navbar />
 
-      <div className="pt-24 pb-4 px-4 h-screen flex flex-col">
-        <div className="flex-1 max-w-7xl mx-auto w-full flex gap-4 overflow-hidden">
+      <div className="pt-24 pb-6 px-6 h-screen flex flex-col">
+        <div className="flex-1 max-w-7xl mx-auto w-full flex gap-6 overflow-hidden">
           {/* Professor Area */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ 
               opacity: 1, 
-              x: isTeaching || isLoading ? 40 : 0,
-              scale: isTeaching || isLoading ? 1.05 : 1
+              x: isTeaching || isLoading ? 20 : 0,
+              scale: isTeaching || isLoading ? 1.02 : 1
             }}
-            transition={{ type: "spring", stiffness: 100, damping: 15 }}
-            className="hidden lg:flex flex-col items-center justify-center w-64 shrink-0 relative"
+            transition={{ type: "spring", stiffness: 100, damping: 20 }}
+            className="hidden lg:flex flex-col items-center justify-center w-72 shrink-0 relative px-4"
           >
+            <div className="absolute inset-0 bg-primary/5 rounded-[3rem] blur-3xl -z-10" />
+            
             <AnimatePresence>
               {(isTeaching || isLoading) && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0, y: 10 }}
-                  className="absolute -top-12 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-2xl rounded-bl-none shadow-xl z-20 whitespace-nowrap"
+                  className="absolute -top-16 left-1/2 -translate-x-1/2 gradient-bg text-primary-foreground px-6 py-3 rounded-2xl rounded-bl-none shadow-glow z-20 whitespace-nowrap"
                 >
                   <div className="absolute -bottom-2 left-0 w-4 h-4 bg-primary rotate-45" />
-                  <p className="text-sm font-bold relative z-10">Listen up! 🦴</p>
+                  <p className="text-sm font-black tracking-tight relative z-10 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" />
+                    BONE-APPETIT! 🦴
+                  </p>
                 </motion.div>
               )}
             </AnimatePresence>
-            <SkeletonProfessor size="lg" isTeaching={isTeaching || isLoading} />
+
+            <div className="relative group">
+               <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+               <SkeletonProfessor size="lg" isTeaching={isTeaching || isLoading} className="relative z-10" />
+            </div>
+
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="mt-4 text-center"
+              className="mt-8 text-center glass-effect px-6 py-4 rounded-2xl border border-white/10"
             >
-              <h3 className="font-display font-bold text-lg">Professor Bones</h3>
-              <p className="text-sm text-muted-foreground">
-                {isLoading ? "Thinking..." : isTeaching ? "Teaching!" : "Ready to help!"}
-              </p>
+              <h3 className="font-display font-black text-xl tracking-tight">Professor Bones</h3>
+              <div className="flex items-center justify-center gap-2 mt-1">
+                 <div className={`w-2 h-2 rounded-full ${isLoading ? 'bg-yellow-400 animate-pulse' : isTeaching ? 'bg-green-400' : 'bg-primary'}`} />
+                 <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    {isLoading ? "Analyzing..." : isTeaching ? "Teaching!" : "Available"}
+                 </p>
+              </div>
             </motion.div>
           </motion.div>
 
           {/* Main Teaching Area */}
-          <div className="flex-1 flex flex-col gap-4 min-w-0">
+          <div className="flex-1 flex flex-col gap-6 min-w-0">
             {/* Canvas Area */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex-1 relative glass-effect rounded-2xl overflow-hidden min-h-[200px]"
+              className="flex-1 relative glass-card overflow-hidden group shadow-2xl"
             >
-              <div className="absolute inset-0 flex items-center justify-center text-muted-foreground pointer-events-none z-0">
+              <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30 pointer-events-none z-0">
                 <div className="text-center">
-                  <p className="text-lg font-medium">Teaching Area</p>
-                  <p className="text-sm">Use tools to draw, highlight, or point at concepts</p>
+                  <BookOpen className="w-20 h-20 mx-auto mb-4 opacity-10" />
+                  <p className="text-2xl font-black tracking-tight opacity-20">INTERACTIVE BOARD</p>
+                  <p className="text-sm font-medium uppercase tracking-widest opacity-20">Professor's Digital Canvas</p>
                 </div>
               </div>
+              
+              <div className="absolute top-4 right-4 z-10 flex gap-2">
+                 <div className="glass-effect px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10 flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                    Live Session
+                 </div>
+              </div>
+
               <DrawingCanvas ref={canvasHandleRef} activeTool={activeTool} onClearRef={clearCanvasRef} />
             </motion.div>
 
@@ -148,12 +171,13 @@ const GeneralMode = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="h-80 shrink-0"
+              className="h-96 shrink-0"
             >
               <ChatBox
                 messages={messages}
                 onSendMessage={handleSendMessage}
                 isLoading={isLoading}
+                placeholder="Ask me anything... I've got a bone to pick with ignorance! 💀"
               />
             </motion.div>
           </div>
@@ -163,13 +187,15 @@ const GeneralMode = () => {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="shrink-0"
+            className="shrink-0 flex flex-col gap-4"
           >
-            <Toolbox
-              activeTool={activeTool}
-              onToolChange={handleToolChange}
-              onClear={handleClear}
-            />
+            <div className="glass-card p-2 flex flex-col gap-2">
+              <Toolbox
+                activeTool={activeTool}
+                onToolChange={handleToolChange}
+                onClear={handleClear}
+              />
+            </div>
           </motion.div>
         </div>
       </div>
