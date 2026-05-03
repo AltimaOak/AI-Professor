@@ -203,9 +203,13 @@ def syllabus_mode():
     if not question:
         return jsonify({"error": "No question provided"}), 400
 
-    prompt = f"""You are an AI Professor.
+    prompt = f"""You are an AI Professor teaching a class. 
 Answer ONLY using the syllabus below.
 If the question is outside the syllabus, reply: "This topic is not part of your syllabus."
+
+IMPORTANT: Your response MUST be in JSON format with exactly these two keys:
+1. "answer": Your full detailed explanation (Markdown allowed).
+2. "board_notes": A list of 3-5 short, punchy key concepts or definitions to write on the blackboard.
 
 SYLLABUS:
 {syllabus_data}
@@ -213,8 +217,19 @@ SYLLABUS:
 QUESTION:
 {question}
 """
-    answer = gemini_generate(prompt)
-    return jsonify({"answer": answer})
+    raw_response = gemini_generate(prompt)
+    
+    import json
+    import re
+    try:
+        json_match = re.search(r'(\{.*\})', raw_response, re.DOTALL)
+        if json_match:
+            data = json.loads(json_match.group(1))
+            return jsonify(data)
+        else:
+            return jsonify({"answer": raw_response, "board_notes": []})
+    except Exception as e:
+        return jsonify({"answer": raw_response, "board_notes": []})
 
 # -------- FILE UPLOAD (PDF / TXT / IMAGE) --------
 @app.route("/upload-file", methods=["GET", "POST"])
@@ -280,8 +295,13 @@ def ask_file():
     if not context:
         return jsonify({"answer": "No documents uploaded yet. Please upload a file first."})
 
-    prompt = f"""Answer ONLY using the context below.
+    prompt = f"""You are an AI Professor teaching a class. 
+Answer ONLY using the context below.
 If the answer is not found, say: "Answer not available in uploaded documents."
+
+IMPORTANT: Your response MUST be in JSON format with exactly these two keys:
+1. "answer": Your full detailed explanation (Markdown allowed).
+2. "board_notes": A list of 3-5 short, punchy key concepts or definitions to write on the blackboard.
 
 CONTEXT:
 {context}
@@ -289,8 +309,19 @@ CONTEXT:
 QUESTION:
 {question}
 """
-    answer = gemini_generate(prompt)
-    return jsonify({"answer": answer})
+    raw_response = gemini_generate(prompt)
+    
+    import json
+    import re
+    try:
+        json_match = re.search(r'(\{.*\})', raw_response, re.DOTALL)
+        if json_match:
+            data = json.loads(json_match.group(1))
+            return jsonify(data)
+        else:
+            return jsonify({"answer": raw_response, "board_notes": []})
+    except Exception as e:
+        return jsonify({"answer": raw_response, "board_notes": []})
 
 # ---------------- RUN SERVER ----------------
 if __name__ == "__main__":

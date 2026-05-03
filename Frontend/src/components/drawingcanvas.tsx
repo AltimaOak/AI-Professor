@@ -102,20 +102,26 @@ const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>(({ act
     });
 
     switch (activeTool) {
+      case "erase":
+        fabricCanvas.isDrawingMode = true;
+        fabricCanvas.freeDrawingBrush.color = "white"; // Color doesn't matter for destination-out
+        fabricCanvas.freeDrawingBrush.width = 40;
+        // @ts-ignore - globalCompositeOperation is valid but might not be in some types
+        fabricCanvas.freeDrawingBrush.globalCompositeOperation = 'destination-out';
+        break;
       case "draw":
         fabricCanvas.isDrawingMode = true;
         fabricCanvas.freeDrawingBrush.color = "hsl(172, 66%, 50%)";
         fabricCanvas.freeDrawingBrush.width = 3;
+        // @ts-ignore
+        fabricCanvas.freeDrawingBrush.globalCompositeOperation = 'source-over';
         break;
       case "highlight":
         fabricCanvas.isDrawingMode = true;
         fabricCanvas.freeDrawingBrush.color = "rgba(251, 191, 36, 0.4)";
-        fabricCanvas.freeDrawingBrush.width = 20;
-        break;
-      case "erase":
-        fabricCanvas.isDrawingMode = true;
-        fabricCanvas.freeDrawingBrush.color = "rgba(0, 0, 0, 0)";
-        fabricCanvas.freeDrawingBrush.width = 20;
+        fabricCanvas.freeDrawingBrush.width = 25;
+        // @ts-ignore
+        fabricCanvas.freeDrawingBrush.globalCompositeOperation = 'source-over';
         break;
       case "point":
         fabricCanvas.isDrawingMode = false;

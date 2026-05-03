@@ -5,7 +5,7 @@ import Navbar from "@/components/navbar";
 import SkeletonProfessor from "@/components/skeletonprofessor";
 import ChatBox, { Message } from "@/components/chatbox";
 import Toolbox, { Tool } from "@/components/Toolbox";
-import DrawingCanvas from "@/components/drawingcanvas";
+import DrawingCanvas, { DrawingCanvasHandle } from "@/components/drawingcanvas";
 import FileUpload from "@/components/fileupload";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +47,7 @@ const SyllabusMode = () => {
   const [isTeaching, setIsTeaching] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
   const clearCanvasRef = useRef<(() => void) | null>(null);
+  const canvasHandleRef = useRef<DrawingCanvasHandle>(null);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
@@ -90,13 +91,21 @@ const SyllabusMode = () => {
         data = await api.general(content);
       }
 
+      // Handle structured response
+      const answer = typeof data === 'string' ? data : (data.answer || "I've explained that on the board!");
+      const boardNotes = data.board_notes || [];
+
       const aiMessage: Message = {
         id: `ai-${Date.now()}`,
-        content: data.answer,
+        content: answer,
         role: "assistant",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, aiMessage]);
+
+      if (boardNotes.length > 0 && canvasHandleRef.current) {
+        canvasHandleRef.current.addBoardNotes(boardNotes);
+      }
     } catch (error) {
       console.error("Error calling Syllabus API:", error);
       const errorMessage: Message = {
@@ -226,7 +235,7 @@ const SyllabusMode = () => {
                  </div>
               </div>
 
-              <DrawingCanvas activeTool={activeTool} onClearRef={clearCanvasRef} />
+              <DrawingCanvas ref={canvasHandleRef} activeTool={activeTool} onClearRef={clearCanvasRef} />
             </motion.div>
 
             {/* Chat Area */}
