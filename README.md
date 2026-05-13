@@ -7,7 +7,7 @@ AI Professor is an interactive learning platform featuring **Professor Bones**, 
 ### Prerequisites
 - Node.js (v18+)
 - Python (v10+)
-- Gemini API Key (set in `Backend/.env`)
+
 
 ---
 
@@ -15,7 +15,7 @@ AI Professor is an interactive learning platform featuring **Professor Bones**, 
 The backend is a Flask API that handles query classification, lesson planning, and document retrieval.
 
 1. **Environment Variables**:
-   Ensure you have a `.env` file in the `Backend/` directory with your `GEMINI_API_KEY`.
+   Ensure you have a `.env` file in the `Backend/` directory
 
 2. **Run the Backend** (from the project root):
    ```powershell
@@ -48,7 +48,7 @@ The frontend is a modern React application built with Vite, Tailwind CSS, and Sh
 
 ## 🛠️ Tech Stack
 - **Frontend**: React, Vite, Tailwind CSS, Shadcn UI, Framer Motion, Lucide Icons.
-- **Backend**: Flask, Python, Google Gemini AI, ChromaDB (Vector Search), PyMuPDF (PDF Parsing), Pytesseract (OCR).
+- **Backend**: Flask, Python, ChromaDB (Vector Search), PyMuPDF (PDF Parsing), Pytesseract (OCR).
 
 ## 📖 Key Features
 - **General Mode**: Ask any question and get an engaging explanation from Professor Bones.
@@ -57,4 +57,4 @@ The frontend is a modern React application built with Vite, Tailwind CSS, and Sh
 - **Hallucination Guard**: Multi-module backend architecture to ensure accuracy and safety.
 
 ---
-© 2024 AI Professor Team. Making learning fun, one bone at a time! 🦴
+ Making learning fun, one bone at a time! 🦴
